@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { saveChatMessage, upsertStudentAssignment } from '../../lib/supabase'
 import CharacterSprite from '../character/CharacterSprite'
+import { DIGITABEL_VOICE } from '../../data/personality'
 
 const CLEARED_MARKER = '✓ CLEARED'
 
@@ -9,7 +10,11 @@ function buildSystemPrompt(assignment, prepAnswers) {
     .map((a, i) => `Q${i + 1}: ${a.question_text}\nSvar: ${a.answer}`)
     .join('\n\n')
 
-  return `${assignment.systemPrompt}
+  return `${DIGITABEL_VOICE}
+
+---
+
+${assignment.systemPrompt}
 
 ---
 Studenten har sendt inn følgende forberedelsessvar:
