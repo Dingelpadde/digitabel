@@ -197,7 +197,7 @@ export default function Landing() {
                 Faglærer
               </p>
               <p style={{ fontSize: 12, color: 'var(--color-text-muted)', lineHeight: 1.5 }}>
-                Dashboardet for Abel Romsaas
+                Dashboardet for Abel Christoffer
               </p>
             </div>
           </button>

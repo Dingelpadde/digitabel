@@ -163,7 +163,7 @@ export default function StudentLogin() {
             {[
               {
                 key: 'history',
-                label: 'Samtalehistorikk og opplastet materiale lagres og er synlig for faglærer (Abel Romsaas).',
+                label: 'Samtalehistorikk og opplastet materiale lagres og er synlig for faglærer (Abel Christoffer).',
               },
               {
                 key: 'email',
