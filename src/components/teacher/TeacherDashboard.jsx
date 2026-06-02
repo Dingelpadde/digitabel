@@ -182,16 +182,21 @@ export default function TeacherDashboard({ onLogout }) {
   const sendReminder = async (assignmentId) => {
     const notStarted = getNotStartedStudents(assignmentId)
     if (!notStarted.length) return
+    const assignment = ASSIGNMENTS.find((a) => a.id === assignmentId)
     setSending(assignmentId)
     try {
       await fetch('/api/send-reminder', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ studentIds: notStarted.map((s) => s.id), assignmentId }),
+        body: JSON.stringify({
+          studentIds: notStarted.map((s) => s.id),
+          assignmentTitle: assignment?.title || 'temaoppgaven',
+          appUrl: window.location.origin,
+        }),
       })
       setSentNotices((prev) => new Set([...prev, assignmentId]))
     } catch (err) {
-      console.error('Klarte ikke sende påminnelse:', err)
+      console.error('Klarte ikke sende invitasjon:', err)
     } finally {
       setSending(null)
     }
@@ -356,7 +361,7 @@ export default function TeacherDashboard({ onLogout }) {
                             className="btn-secondary"
                             style={{ width: '100%', fontSize: 6, padding: '8px 12px' }}
                           >
-                            {wasSent ? '✓ Påminnelse sendt' : sending === a.id ? 'Sender...' : `Påminn ${notStarted.length} student${notStarted.length !== 1 ? 'er' : ''}`}
+                            {wasSent ? '✓ Invitasjon sendt' : sending === a.id ? 'Sender...' : `Inviter ${notStarted.length} student${notStarted.length !== 1 ? 'er' : ''}`}
                           </button>
                         )}
                       </div>
@@ -572,7 +577,7 @@ export default function TeacherDashboard({ onLogout }) {
                                 className="btn-secondary"
                                 style={{ fontSize: 6, padding: '8px 12px', flexShrink: 0 }}
                               >
-                                {wasSent ? '✓ Sendt' : sending === a.id ? '...' : `Påminn ${notStarted.length}`}
+                                {wasSent ? '✓ Sendt' : sending === a.id ? '...' : `Inviter ${notStarted.length}`}
                               </button>
                             )}
                           </div>
