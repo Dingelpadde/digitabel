@@ -197,7 +197,7 @@ export default function AssignmentList() {
                       </div>
                       <div style={{ minWidth: 0 }}>
                         <p style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--color-text)', margin: 0 }}>
-                          {assignment.title}
+                          <span className="assignment-name" data-text={assignment.title}>{assignment.title}</span>
                         </p>
                         <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginTop: 4, lineHeight: 1.5 }}>
                           {assignment.description}
@@ -214,6 +214,31 @@ export default function AssignmentList() {
       </main>
 
       <div className="grain" aria-hidden="true" />
+
+      <style>{`
+        .assignment-name {
+          position: relative;
+          display: inline-block;
+        }
+        .assignment-name::before,
+        .assignment-name::after {
+          content: attr(data-text);
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          pointer-events: none;
+          opacity: 0;
+        }
+        .assignment-name::before { color: var(--color-chroma-pink); opacity: .28; transform: translateX(-1.5px); }
+        .assignment-name::after  { color: var(--color-chroma-blue); opacity: .28; transform: translateX(1.5px); }
+        .card:hover .assignment-name::before { opacity: .9; animation: asgn-a .26s steps(2,end) infinite; }
+        .card:hover .assignment-name::after  { opacity: .9; animation: asgn-b .26s steps(2,end) infinite; }
+        .card:hover .assignment-name { animation: asgn-main .26s steps(2,end) infinite; }
+        @keyframes asgn-main { 0%,100%{transform:translateX(0);}30%{transform:translateX(-2px);}60%{transform:translateX(2px);} }
+        @keyframes asgn-a { 0%,100%{transform:translate(-1.5px,0);}25%{transform:translate(-6px,-1px);}50%{transform:translate(3px,1px);}75%{transform:translate(-4px,0);} }
+        @keyframes asgn-b { 0%,100%{transform:translate(1.5px,0);}25%{transform:translate(6px,1px);}50%{transform:translate(-3px,-1px);}75%{transform:translate(4px,0);} }
+      `}</style>
     </div>
   )
 }
