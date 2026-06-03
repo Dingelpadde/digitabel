@@ -40,8 +40,8 @@ const MENTAL_HEALTH_RESPONSE = `Jeg hører at du har det tungt akkurat nå. Det 
 Jeg er her som et faglig verktøy og er ikke den rette til å hjelpe med dette — men det finnes folk som er det.
 
 Ta kontakt med Studentsamskipnadens helsetjeneste:
-📞 SiO Helse: 22 85 32 00
-🌐 sio.no/helse
+SiO Helse: 22 85 32 00
+sio.no/helse
 
 Eller snakk med noen du stoler på. Du fortjener støtte.`
 
@@ -401,7 +401,7 @@ export default function ChatInterface({
       >
         {cleared ? (
           <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', padding: '4px 0' }}>
-            Veiledning fullført. Rull opp for å lese samtalen, eller gå videre til refleksjon.
+            Veiledning fullført. Rull opp for å lese samtalen.
           </p>
         ) : (
           <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'flex-end', gap: 9 }}>

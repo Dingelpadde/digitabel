@@ -6,15 +6,13 @@ import {
   upsertStudentAssignment,
   getPrepAnswers,
   getChatMessages,
-  getReflection,
 } from '../../lib/supabase'
 import { getAssignmentById } from '../../data/assignments'
 import PrepForm from './PrepForm'
 import ChatInterface from './ChatInterface'
-import ReflectionForm from './ReflectionForm'
 
-// Steps: prep → chat → reflection → done
-const STEP = { PREP: 'prep', CHAT: 'chat', REFLECTION: 'reflection', DONE: 'done' }
+// Steps: prep → chat → done
+const STEP = { PREP: 'prep', CHAT: 'chat', DONE: 'done' }
 
 export default function AssignmentDetail() {
   const { assignmentId } = useParams()
@@ -26,7 +24,6 @@ export default function AssignmentDetail() {
   const [step, setStep] = useState(null) // null = loading
   const [prepAnswers, setPrepAnswers] = useState([])
   const [chatMessages, setChatMessages] = useState([])
-  const [reflection, setReflection] = useState(null)
 
   useEffect(() => {
     if (!assignment) return
@@ -43,17 +40,15 @@ export default function AssignmentDetail() {
 
         setStudentAssignment(sa)
 
-        const [answers, messages, ref] = await Promise.all([
+        const [answers, messages] = await Promise.all([
           getPrepAnswers(sa.id),
           getChatMessages(sa.id),
-          getReflection(sa.id),
         ])
         setPrepAnswers(answers)
         setChatMessages(messages)
-        setReflection(ref)
 
         if (sa.status === 'cleared') {
-          setStep(ref ? STEP.DONE : STEP.REFLECTION)
+          setStep(STEP.DONE)
         } else {
           setStep(STEP.CHAT)
         }
@@ -73,11 +68,6 @@ export default function AssignmentDetail() {
   const handleCleared = (sa, messages) => {
     setStudentAssignment(sa)
     setChatMessages(messages)
-    setStep(STEP.REFLECTION)
-  }
-
-  const handleReflectionSaved = (ref) => {
-    setReflection(ref)
     setStep(STEP.DONE)
   }
 
@@ -92,7 +82,6 @@ export default function AssignmentDetail() {
   const stepLabels = [
     { key: STEP.PREP, label: 'Forbered' },
     { key: STEP.CHAT, label: 'Veiledning' },
-    { key: STEP.REFLECTION, label: 'Reflekter' },
   ]
   const stepIndex = stepLabels.findIndex((s) => s.key === step)
 
@@ -182,14 +171,6 @@ export default function AssignmentDetail() {
           />
         )}
 
-        {step === STEP.REFLECTION && studentAssignment && (
-          <ReflectionForm
-            assignment={assignment}
-            studentAssignment={studentAssignment}
-            onSaved={handleReflectionSaved}
-          />
-        )}
-
         {step === STEP.DONE && (
           <div style={{ maxWidth: 600, margin: '0 auto', padding: '48px 16px', textAlign: 'center' }}>
             <div
@@ -207,24 +188,9 @@ export default function AssignmentDetail() {
             </div>
             <h2 className="display-title" style={{ fontSize: 26, margin: '0 0 8px' }}>Alt klart!</h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
-              Du har fullført veiledningen med Digitabel og refleksjonen for <strong style={{ color: 'var(--color-text)' }}>{assignment.title}</strong>.
+              Du har fullført veiledningen med Digitabel for <strong style={{ color: 'var(--color-text)' }}>{assignment.title}</strong>.
               Du er klar for veiledningen med Abel.
             </p>
-            {reflection && (
-              <div className="card" style={{ textAlign: 'left', marginBottom: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <h3 className="pixel-label">Refleksjonene dine</h3>
-                {[
-                  { label: 'Hva lærte du?', value: reflection.what_learned },
-                  { label: 'Hva endret du?', value: reflection.what_changed },
-                  { label: 'Hva ville du gjort annerledes?', value: reflection.what_differently },
-                ].map((r) => (
-                  <div key={r.label}>
-                    <p style={{ fontSize: 11, color: 'var(--color-chroma-pink)', textTransform: 'uppercase', letterSpacing: '0.06em', margin: 0 }}>{r.label}</p>
-                    <p style={{ fontSize: 13, color: 'var(--color-text)', marginTop: 4, lineHeight: 1.6 }}>{r.value}</p>
-                  </div>
-                ))}
-              </div>
-            )}
             <button onClick={() => navigate('/student')} className="btn-primary">
               Tilbake til oppgavene
             </button>

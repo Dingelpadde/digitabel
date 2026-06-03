@@ -22,7 +22,7 @@ export default function StudentLogin() {
   const [consent, setConsent] = useState({ history: false, email: false, gdpr: false })
 
   // Registrerings-tilstand
-  const [form, setForm] = useState({ name: '', email: '', kull: '', stress: '' })
+  const [form, setForm] = useState({ name: '', email: '', kull: '' })
 
   // Tilbakevendende bruker — bare e-post
   const [returnEmail, setReturnEmail] = useState('')
@@ -54,7 +54,6 @@ export default function StudentLogin() {
           email: form.email.trim().toLowerCase(),
           consent_given_at: new Date().toISOString(),
           kull: form.kull.trim(),
-          stress_note: form.stress.trim(),
         })
       } catch {
         studentData = {
@@ -128,21 +127,6 @@ export default function StudentLogin() {
 
         {/* Logo / header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              fontFamily: 'var(--font-body)',
-              fontSize: 10,
-              letterSpacing: '0.24em',
-              color: 'var(--color-text-muted)',
-              textTransform: 'uppercase',
-              marginBottom: 14,
-            }}
-          >
-            <span style={{ color: 'var(--color-star)' }}>✦</span> Digital veileder
-          </span>
           <h1
             className="display-title glitch"
             data-text="DIGITABEL"
@@ -274,19 +258,6 @@ export default function StudentLogin() {
                   value={form.kull}
                   onChange={(e) => setForm((f) => ({ ...f, kull: e.target.value }))}
                   placeholder="f.eks. 2024–2025"
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 6 }}>
-                  Hva er ditt største stressmoment akkurat nå?
-                </label>
-                <textarea
-                  className="textarea"
-                  value={form.stress}
-                  onChange={(e) => setForm((f) => ({ ...f, stress: e.target.value }))}
-                  placeholder="Skriv gjerne fritt..."
-                  rows={3}
                 />
               </div>
 
