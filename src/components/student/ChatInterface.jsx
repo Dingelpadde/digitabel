@@ -218,7 +218,7 @@ export default function ChatInterface({
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', maxWidth: 560, margin: '0 auto', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100dvh - 104px)', maxWidth: 560, margin: '0 auto', width: '100%' }}>
 
       {/* Topbar */}
       <header
@@ -278,7 +278,7 @@ export default function ChatInterface({
       </header>
 
       {/* Tråd */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 8px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 8px', WebkitOverflowScrolling: 'touch' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* Dag-skille */}
@@ -394,7 +394,7 @@ export default function ChatInterface({
       <div
         style={{
           flex: '0 0 auto',
-          padding: '12px 14px 16px',
+          padding: '12px 14px calc(16px + env(safe-area-inset-bottom))',
           borderTop: '1px solid var(--color-border)',
           background: 'var(--color-bg)',
         }}

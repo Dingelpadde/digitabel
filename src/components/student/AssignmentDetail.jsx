@@ -73,7 +73,7 @@ export default function AssignmentDetail() {
 
   if (!assignment) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg)' }}>
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-bg)' }}>
         <p style={{ color: 'var(--color-text-muted)' }}>Fant ikke temaoppgaven.</p>
       </div>
     )
@@ -86,7 +86,7 @@ export default function AssignmentDetail() {
   const stepIndex = stepLabels.findIndex((s) => s.key === step)
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--color-bg)', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <header
         style={{

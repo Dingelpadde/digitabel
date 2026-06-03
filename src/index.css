@@ -43,6 +43,7 @@
     font-family: var(--font-body);
     font-size: 14px;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 
   * {
@@ -72,6 +73,7 @@
     cursor: pointer;
     transition: box-shadow 80ms steps(2), transform 80ms steps(2);
     line-height: 1.4;
+    touch-action: manipulation;
   }
   .btn-primary:hover {
     background: var(--color-accent-dark);
@@ -101,6 +103,7 @@
     cursor: pointer;
     transition: box-shadow 80ms steps(2), transform 80ms steps(2);
     line-height: 1.4;
+    touch-action: manipulation;
   }
   .btn-secondary:hover {
     background: rgba(232,122,214,0.08);
@@ -198,7 +201,9 @@
     line-height: 1.5;
     color: var(--color-text);
     max-width: 85%;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
   }
   .bubble-out {
     background: var(--color-bubble-out);
@@ -212,7 +217,9 @@
     color: var(--color-text-inv);
     max-width: 85%;
     align-self: flex-end;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    min-width: 0;
   }
 
   /* ── Pixel-label ── */
@@ -396,4 +403,16 @@
 .dashed-line {
   border: none;
   border-top: 2px dashed var(--color-dashed);
+}
+
+/* ── Mobil: forhindre iOS-zoom på input-fokus ── */
+@media (max-width: 768px) {
+  .input, .textarea {
+    font-size: 16px;
+  }
+}
+
+/* ── Safe-area padding for notched iPhones (home indicator) ── */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
 }

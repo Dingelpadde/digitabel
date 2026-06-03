@@ -78,7 +78,7 @@ export default function AssignmentList() {
   const firstName = student.name.split(' ')[0]
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--color-bg)', position: 'relative' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--color-bg)', position: 'relative' }}>
       <div className="stars" aria-hidden="true" ref={starsRef} />
 
       {/* Topbar */}

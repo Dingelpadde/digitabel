@@ -114,7 +114,7 @@ export default function StudentLogin() {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         background: 'var(--color-bg)',
         display: 'flex',
         flexDirection: 'column',
