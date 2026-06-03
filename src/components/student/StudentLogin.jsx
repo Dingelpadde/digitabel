@@ -124,27 +124,33 @@ export default function StudentLogin() {
         padding: '24px 16px',
       }}
     >
-      <div style={{ width: '100%', maxWidth: 440 }}>
+      <div style={{ width: '100%', maxWidth: 440, position: 'relative', zIndex: 1 }}>
 
         {/* Logo / header */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div
+          <span
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              width: 56,
-              height: 56,
-              background: 'var(--color-surface)',
-              border: '2px solid var(--color-frame)',
-              boxShadow: '3px 3px 0 var(--color-frame-dark)',
-              marginBottom: 12,
+              gap: 8,
+              fontFamily: 'var(--font-body)',
+              fontSize: 10,
+              letterSpacing: '0.24em',
+              color: 'var(--color-text-muted)',
+              textTransform: 'uppercase',
+              marginBottom: 14,
             }}
           >
-            <span style={{ fontFamily: '"Press Start 2P"', fontSize: 18, color: 'var(--color-accent)' }}>D</span>
-          </div>
-          <div className="pixel-title" style={{ marginBottom: 6 }}>DIGITABEL</div>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
+            <span style={{ color: 'var(--color-star)' }}>✦</span> Digital veileder
+          </span>
+          <h1
+            className="display-title glitch"
+            data-text="DIGITABEL"
+            style={{ fontSize: 'clamp(28px,9vw,40px)', lineHeight: 1, margin: '0 0 8px' }}
+          >
+            DIGITABEL
+          </h1>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 13, lineHeight: 1.55 }}>
             {step === STEP_CONSENT && 'Velkommen! La oss starte med samtykkeerklæringen.'}
             {step === STEP_REGISTER && 'Registrer deg for å komme i gang.'}
             {step === STEP_RETURNING && 'Logg inn med e-postadressen din.'}
@@ -364,6 +370,8 @@ export default function StudentLogin() {
           DiP-programmet · Fagskolen Kristiania
         </p>
       </div>
+
+      <div className="grain" aria-hidden="true" />
     </div>
   )
 }

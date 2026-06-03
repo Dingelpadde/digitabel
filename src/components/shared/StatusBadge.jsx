@@ -1,10 +1,10 @@
 const CONFIG = {
   not_started: {
-    color: '#7a8a9a',
+    color: '#7e6090',
     label: 'Ikke startet',
   },
   in_progress: {
-    color: '#f0a500',
+    color: '#e8a030',
     label: 'Pågår',
   },
   cleared: {

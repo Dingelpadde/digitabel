@@ -13,7 +13,7 @@ export default function PrepForm({ assignment, student, onComplete }) {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!allFilled) {
-      setError('Please answer all questions before continuing. (Minimum 10 characters each.)')
+      setError('Svar på alle spørsmålene før du går videre. (Minst 10 tegn på hvert.)')
       return
     }
     setLoading(true)
@@ -51,62 +51,72 @@ export default function PrepForm({ assignment, student, onComplete }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Preparation Questions</h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Answer these questions thoughtfully before starting the AI sparring session.
-          Your answers will be shared with Claude as context.
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 16px' }}>
+      <div style={{ marginBottom: 24 }}>
+        <h2 className="display-title" style={{ fontSize: 22, margin: 0 }}>Forberedelsesspørsmål</h2>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 6, lineHeight: 1.55 }}>
+          Svar gjennomtenkt på disse før du starter veiledningen. Svarene gir Digitabel kontekst om hvor du står.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {assignment.prepQuestions.map((question, i) => (
-          <div key={i} className="card p-5">
-            <label className="block text-sm font-semibold text-gray-900 mb-3">
-              <span className="inline-flex items-center justify-center w-5 h-5 bg-brand-500 text-white rounded-full text-xs font-bold mr-2">
-                {i + 1}
-              </span>
-              {question}
-            </label>
-            <textarea
-              value={answers[i]}
-              onChange={(e) => {
-                const next = [...answers]
-                next[i] = e.target.value
-                setAnswers(next)
-              }}
-              rows={4}
-              placeholder="Write your answer here…"
-              className="textarea"
-            />
-            <p className={`text-xs mt-1 ${answers[i].trim().length < 10 ? 'text-gray-400' : 'text-green-600'}`}>
-              {answers[i].trim().length} characters
-            </p>
-          </div>
-        ))}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+        {assignment.prepQuestions.map((question, i) => {
+          const ok = answers[i].trim().length >= 10
+          return (
+            <div key={i} className="card">
+              <label style={{ display: 'block', fontSize: 14, color: 'var(--color-text)', marginBottom: 12, lineHeight: 1.5 }}>
+                <span
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    width: 22, height: 22, marginRight: 8, verticalAlign: 'middle',
+                    background: 'var(--color-accent)', color: 'var(--color-text-inv)',
+                    fontFamily: 'var(--font-pixel)', fontSize: 8,
+                    boxShadow: '1px 1px 0 #000',
+                  }}
+                >
+                  {i + 1}
+                </span>
+                {question}
+              </label>
+              <textarea
+                value={answers[i]}
+                onChange={(e) => {
+                  const next = [...answers]
+                  next[i] = e.target.value
+                  setAnswers(next)
+                }}
+                rows={4}
+                placeholder="Skriv svaret ditt her…"
+                className="textarea"
+              />
+              <p style={{ fontSize: 11, marginTop: 6, color: ok ? '#6ab04c' : 'var(--color-text-muted)' }}>
+                {answers[i].trim().length} tegn
+              </p>
+            </div>
+          )
+        })}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          <div
+            style={{
+              background: 'rgba(232,80,80,0.1)',
+              border: '2px solid var(--color-danger)',
+              boxShadow: '2px 2px 0 #000',
+              padding: '12px 16px',
+              fontSize: 13,
+              color: 'var(--color-danger)',
+            }}
+          >
             {error}
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <p className="text-xs text-gray-400">
-            {answers.filter((a) => a.trim().length >= 10).length} of {assignment.prepQuestions.length} questions answered
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
+            {answers.filter((a) => a.trim().length >= 10).length} av {assignment.prepQuestions.length} besvart
           </p>
-          <button
-            type="submit"
-            disabled={loading || !allFilled}
-            className="btn-primary"
-          >
-            {loading ? 'Saving…' : 'Start AI Sparring'}
-            {!loading && (
-              <svg className="w-4 h-4 ml-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            )}
+          <button type="submit" disabled={loading || !allFilled} className="btn-primary">
+            {loading ? 'Lagrer…' : 'Start veiledning →'}
           </button>
         </div>
       </form>

@@ -2,9 +2,9 @@ import { useState } from 'react'
 import { saveReflection } from '../../lib/supabase'
 
 const QUESTIONS = [
-  { key: 'whatLearned', label: 'What did you learn from the AI sparring session?' },
-  { key: 'whatChanged', label: 'What did you change or clarify about your assignment idea as a result?' },
-  { key: 'whatDifferently', label: 'What would you do differently next time to prepare better?' },
+  { key: 'whatLearned', label: 'Hva lærte du av veiledningen med Digitabel?' },
+  { key: 'whatChanged', label: 'Hva endret eller avklarte du rundt idéen din som følge av det?' },
+  { key: 'whatDifferently', label: 'Hva ville du gjort annerledes neste gang for å forberede deg bedre?' },
 ]
 
 export default function ReflectionForm({ assignment, studentAssignment, onSaved }) {
@@ -17,7 +17,7 @@ export default function ReflectionForm({ assignment, studentAssignment, onSaved 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!allFilled) {
-      setError('Please answer all three questions before submitting.')
+      setError('Svar på alle tre spørsmålene før du sender inn.')
       return
     }
     setLoading(true)
@@ -34,51 +34,59 @@ export default function ReflectionForm({ assignment, studentAssignment, onSaved 
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 16px' }}>
       {/* Header */}
-      <div className="mb-6">
-        <div className="inline-flex items-center gap-2 bg-green-100 text-green-800 text-sm font-semibold px-3 py-1.5 rounded-full mb-4">
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          Cleared for supervision
-        </div>
-        <h2 className="text-xl font-bold text-gray-900">Reflection</h2>
-        <p className="text-gray-500 text-sm mt-1">
-          Take a moment to reflect on the sparring session. These answers are saved and visible to your teacher.
-          Honesty is more valuable than polish.
+      <div style={{ marginBottom: 24 }}>
+        <span
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 14,
+            background: 'rgba(106,176,76,0.12)', border: '2px solid #6ab04c', boxShadow: '2px 2px 0 #000',
+            color: '#6ab04c', fontFamily: 'var(--font-pixel)', fontSize: 7, padding: '5px 10px',
+          }}
+        >
+          ✓ Klarert for veiledning
+        </span>
+        <h2 className="display-title" style={{ fontSize: 22, margin: 0 }}>Refleksjon</h2>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 6, lineHeight: 1.55 }}>
+          Ta et øyeblikk til å reflektere over veiledningen. Svarene lagres og er synlige for Abel.
+          Ærlighet er mer verdt enn å skrive pent.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {QUESTIONS.map((q) => (
-          <div key={q.key} className="card p-5">
-            <label className="block text-sm font-semibold text-gray-900 mb-3">
+          <div key={q.key} className="card">
+            <label style={{ display: 'block', fontSize: 14, color: 'var(--color-text)', marginBottom: 12, lineHeight: 1.5 }}>
               {q.label}
             </label>
             <textarea
               value={answers[q.key]}
               onChange={(e) => setAnswers((prev) => ({ ...prev, [q.key]: e.target.value }))}
               rows={4}
-              placeholder="Write your honest reflection here…"
+              placeholder="Skriv din ærlige refleksjon her…"
               className="textarea"
             />
           </div>
         ))}
 
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700">
+          <div
+            style={{
+              background: 'rgba(232,80,80,0.1)',
+              border: '2px solid var(--color-danger)',
+              boxShadow: '2px 2px 0 #000',
+              padding: '12px 16px',
+              fontSize: 13,
+              color: 'var(--color-danger)',
+            }}
+          >
             {error}
           </div>
         )}
 
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={loading || !allFilled}
-            className="btn-primary"
-          >
-            {loading ? 'Saving…' : 'Submit reflection'}
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <button type="submit" disabled={loading || !allFilled} className="btn-primary">
+            {loading ? 'Lagrer…' : 'Send inn refleksjon'}
           </button>
         </div>
       </form>
