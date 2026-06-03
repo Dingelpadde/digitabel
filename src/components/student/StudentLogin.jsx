@@ -202,7 +202,7 @@ export default function StudentLogin() {
                   }}
                 >
                   {consent[key] && (
-                    <span style={{ fontFamily: '"Press Start 2P"', fontSize: 8, color: '#1a0e04' }}>✓</span>
+                    <span style={{ fontFamily: '"Press Start 2P"', fontSize: 8, color: 'var(--color-text-inv)' }}>✓</span>
                   )}
                 </div>
                 <span style={{ fontSize: 13, color: 'var(--color-text)', lineHeight: 1.6 }}>{label}</span>

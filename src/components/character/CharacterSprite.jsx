@@ -1,5 +1,5 @@
 /**
- * CharacterSprite — placeholder til pixelart-karakteren er ferdigdesignet.
+ * CharacterSprite — den ekte pixel-Abel som innrammet portrett.
  * Props:
  *   pose: 'idle' | 'talking' | 'thinking' | 'serious'
  *   size: 'sm' | 'md' | 'lg'
@@ -7,104 +7,47 @@
  */
 
 const SIZE = {
-  sm: { outer: 56,  inner: 36, pixel: 'pixel-xs' },
-  md: { outer: 80,  inner: 52, pixel: 'pixel-sm' },
-  lg: { outer: 100, inner: 64, pixel: 'pixel-md' },
-}
-
-const POSE_LABEL = {
-  idle:     '...',
-  talking:  '..!',
-  thinking: '?',
-  serious:  '.',
-}
-
-const POSE_COLOR = {
-  idle:     '#e8b87a',
-  talking:  '#6ab04c',
-  thinking: '#4a90d9',
-  serious:  '#7a8a9a',
+  sm: 38,
+  md: 84,
+  lg: 100,
 }
 
 export default function CharacterSprite({ pose = 'idle', size = 'md', animated = true }) {
-  const s = SIZE[size] ?? SIZE.md
+  const px = SIZE[size] ?? SIZE.md
   const animClass = animated ? `character-${pose}` : ''
-  const color = POSE_COLOR[pose]
+  const serious = pose === 'serious'
 
   return (
     <div
-      className={`flex flex-col items-center gap-1 select-none ${animClass}`}
-      style={{ width: s.outer }}
+      style={{
+        width: px,
+        height: px,
+        flexShrink: 0,
+        border: `2px solid ${serious ? 'var(--color-text-muted)' : 'var(--color-border)'}`,
+        borderRadius: size === 'sm' ? 4 : 5,
+        background: '#e8e8e8',
+        overflow: 'hidden',
+        boxShadow: `${size === 'sm' ? '2px 2px' : '4px 4px'} 0 rgba(176,122,232,.55)`,
+      }}
       aria-hidden="true"
       data-pose={pose}
     >
-      {/* Avatar-boks */}
-      <div
+      <img
+        src="/abel-avatar.png"
+        alt="Abel"
+        draggable="false"
+        className={`sprite-img ${animClass}`}
         style={{
-          width: s.outer,
-          height: s.outer,
-          background: '#1f2d3d',
-          border: `2px solid ${color}`,
-          boxShadow: `3px 3px 0 #1a0e04`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          position: 'relative',
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          imageRendering: 'pixelated',
+          display: 'block',
+          transformOrigin: 'bottom center',
+          transform: 'scale(1.04)',
+          userSelect: 'none',
         }}
-      >
-        {/* Piksel-avatar: store "A" bokstav som stand-in */}
-        <span
-          style={{
-            fontFamily: '"Press Start 2P", monospace',
-            fontSize: s.inner * 0.55,
-            color,
-            lineHeight: 1,
-            userSelect: 'none',
-          }}
-        >
-          A
-        </span>
-
-        {/* Status-prikk øverst til høyre */}
-        {pose === 'talking' && (
-          <span
-            style={{
-              position: 'absolute',
-              top: 3,
-              right: 3,
-              width: 6,
-              height: 6,
-              background: '#6ab04c',
-              boxShadow: '1px 1px 0 #000',
-            }}
-          />
-        )}
-        {pose === 'thinking' && (
-          <span
-            style={{
-              position: 'absolute',
-              top: 3,
-              right: 3,
-              width: 6,
-              height: 6,
-              background: '#4a90d9',
-              boxShadow: '1px 1px 0 #000',
-            }}
-          />
-        )}
-      </div>
-
-      {/* Pose-label */}
-      <span
-        style={{
-          fontFamily: '"Press Start 2P", monospace',
-          fontSize: 6,
-          color: '#7a8a9a',
-          letterSpacing: '0.05em',
-        }}
-      >
-        {POSE_LABEL[pose]}
-      </span>
+      />
     </div>
   )
 }

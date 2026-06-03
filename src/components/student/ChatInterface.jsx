@@ -212,30 +212,58 @@ export default function ChatInterface({
     return <span style={{ whiteSpace: 'pre-wrap' }}>{content}</span>
   }
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)' }}>
+  const formatTime = (iso) => {
+    const d = iso ? new Date(iso) : new Date()
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')
+  }
 
-      {/* Kontekst-stripe */}
-      <div
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', maxWidth: 560, margin: '0 auto', width: '100%' }}>
+
+      {/* Topbar */}
+      <header
         style={{
-          background: 'var(--color-surface)',
-          borderBottom: '2px solid var(--color-border)',
-          padding: '8px 16px',
+          flex: '0 0 auto',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          gap: 11,
+          padding: '14px 16px',
+          borderBottom: '1px solid var(--color-border)',
+          background: 'var(--color-bg)',
         }}
       >
-        <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
-          <span style={{ color: 'var(--color-accent)', fontFamily: '"Press Start 2P"', fontSize: 7 }}>
+        <span style={{ color: 'var(--color-star)', fontSize: 15, lineHeight: 1 }}>✦</span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1, minWidth: 0 }}>
+          <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 11, color: 'var(--color-text)' }}>
             DIGITABEL
           </span>
-          {' '} sparrer deg på: <strong style={{ color: 'var(--color-text)' }}>{assignment.title}</strong>
-        </p>
+          <span
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 10,
+              letterSpacing: '0.04em',
+              color: 'var(--color-text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span
+              style={{
+                width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+                background: 'var(--color-accent)', boxShadow: '0 0 6px var(--color-accent)',
+              }}
+            />
+            {assignment.title}
+          </span>
+        </div>
         {cleared && (
           <span
             style={{
-              fontFamily: '"Press Start 2P", monospace',
+              fontFamily: 'var(--font-pixel)',
               fontSize: 6,
               color: '#6ab04c',
               background: 'rgba(106,176,76,0.1)',
@@ -247,31 +275,30 @@ export default function ChatInterface({
             CLEARED
           </span>
         )}
-      </div>
+      </header>
 
-      {/* Meldinger */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '24px 16px' }}>
-        <div style={{ maxWidth: 600, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Tråd */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 16px 8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* Dag-skille */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 2px' }}>
+            <span className="dashed-line" style={{ flex: 1 }} />
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: '0.18em', color: 'var(--color-text-muted)' }}>
+              I DAG
+            </span>
+            <span className="dashed-line" style={{ flex: 1 }} />
+          </div>
 
           {/* Spinner ved oppstart */}
           {messages.length === 0 && streaming && (
-            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div
-                style={{
-                  width: 32, height: 32,
-                  background: 'var(--color-surface)',
-                  border: '2px solid var(--color-accent)',
-                  boxShadow: '2px 2px 0 #000',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0,
-                  fontFamily: '"Press Start 2P"', fontSize: 10, color: 'var(--color-accent)',
-                }}
-              >A</div>
+            <div className="chat-message" style={{ display: 'flex', gap: 9, alignItems: 'flex-end' }}>
+              <CharacterSprite pose={pose} size="sm" animated />
               <div className="bubble-in">
                 {streamingText ? (
                   <span style={{ whiteSpace: 'pre-wrap' }}>{streamingText}</span>
                 ) : (
-                  <div style={{ display: 'flex', gap: 4, padding: '2px 0' }}>
+                  <div style={{ display: 'flex', gap: 6, padding: '2px 0' }}>
                     <span className="typing-dot" />
                     <span className="typing-dot" />
                     <span className="typing-dot" />
@@ -281,59 +308,41 @@ export default function ChatInterface({
             </div>
           )}
 
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className="chat-message"
-              style={{
-                display: 'flex',
-                gap: 12,
-                alignItems: 'flex-start',
-                flexDirection: msg.role === 'user' ? 'row-reverse' : 'row',
-              }}
-            >
-              {/* Avatar */}
+          {messages.map((msg, i) => {
+            const isAbel = msg.role === 'assistant'
+            return (
               <div
+                key={i}
+                className="chat-message"
                 style={{
-                  width: 32, height: 32, flexShrink: 0,
-                  background: 'var(--color-surface)',
-                  border: `2px solid ${msg.role === 'assistant' ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                  boxShadow: '2px 2px 0 #000',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: '"Press Start 2P"', fontSize: 9,
-                  color: msg.role === 'assistant' ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                  display: 'flex',
+                  gap: 9,
+                  alignItems: 'flex-end',
+                  justifyContent: isAbel ? 'flex-start' : 'flex-end',
                 }}
               >
-                {msg.role === 'assistant' ? 'A' : 'Du'}
-              </div>
-
-              {/* Boble */}
-              <div style={{ flex: 1, display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>
-                <div className={msg.role === 'assistant' ? 'bubble-in' : 'bubble-out'}>
-                  {msg.role === 'assistant' ? renderMessageContent(msg.content) : msg.content}
+                {isAbel && <CharacterSprite pose="idle" size="sm" animated />}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 5, maxWidth: '78%', alignItems: isAbel ? 'flex-start' : 'flex-end' }}>
+                  <div className={isAbel ? 'bubble-in' : 'bubble-out'}>
+                    {isAbel ? renderMessageContent(msg.content) : msg.content}
+                  </div>
+                  <time style={{ fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: '0.05em', color: 'var(--color-text-muted)', padding: '0 4px' }}>
+                    {formatTime(msg.created_at)}
+                  </time>
                 </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
 
           {/* Streaming-boble */}
           {streaming && messages.length > 0 && (
-            <div className="chat-message" style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-              <div
-                style={{
-                  width: 32, height: 32, flexShrink: 0,
-                  background: 'var(--color-surface)',
-                  border: '2px solid var(--color-accent)',
-                  boxShadow: '2px 2px 0 #000',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: '"Press Start 2P"', fontSize: 10, color: 'var(--color-accent)',
-                }}
-              >A</div>
+            <div className="chat-message" style={{ display: 'flex', gap: 9, alignItems: 'flex-end' }}>
+              <CharacterSprite pose={pose} size="sm" animated />
               <div className="bubble-in">
                 {streamingText ? (
-                  <span style={{ whiteSpace: 'pre-wrap' }}>{streamingText}<span style={{ opacity: 0.6, animation: 'none' }}>▌</span></span>
+                  <span style={{ whiteSpace: 'pre-wrap' }}>{streamingText}<span style={{ opacity: 0.6 }}>▌</span></span>
                 ) : (
-                  <div style={{ display: 'flex', gap: 4, padding: '2px 0' }}>
+                  <div style={{ display: 'flex', gap: 6, padding: '2px 0' }}>
                     <span className="typing-dot" />
                     <span className="typing-dot" />
                     <span className="typing-dot" />
@@ -346,7 +355,7 @@ export default function ChatInterface({
           {error && (
             <div
               style={{
-                background: 'rgba(231,76,60,0.1)',
+                background: 'rgba(232,80,80,0.1)',
                 border: '2px solid var(--color-danger)',
                 boxShadow: '2px 2px 0 #000',
                 padding: '12px 16px',
@@ -367,7 +376,7 @@ export default function ChatInterface({
                   border: '2px solid #6ab04c',
                   boxShadow: '3px 3px 0 #000',
                   padding: '10px 20px',
-                  fontFamily: '"Press Start 2P"', fontSize: 7,
+                  fontFamily: 'var(--font-pixel)', fontSize: 7,
                   color: '#6ab04c',
                   lineHeight: 1.8,
                 }}
@@ -381,55 +390,41 @@ export default function ChatInterface({
         </div>
       </div>
 
-      {/* CharacterSprite + input-rad */}
+      {/* Composer */}
       <div
         style={{
-          background: 'var(--color-surface)',
-          borderTop: '2px solid var(--color-border)',
+          flex: '0 0 auto',
+          padding: '12px 14px 16px',
+          borderTop: '1px solid var(--color-border)',
+          background: 'var(--color-bg)',
         }}
       >
-        {/* Karakter */}
-        <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12, paddingBottom: 4 }}>
-          <CharacterSprite pose={pose} size="md" animated={true} />
-        </div>
-
-        {/* Input-rad */}
-        <div style={{ padding: '8px 16px 16px' }}>
-          <div style={{ maxWidth: 600, margin: '0 auto' }}>
-            {cleared ? (
-              <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', padding: '8px 0' }}>
-                Sparring fullført. Rull opp for å lese samtalen, eller gå videre til refleksjon.
-              </p>
-            ) : (
-              <form onSubmit={handleSend} style={{ display: 'flex', gap: 8 }}>
-                <input
-                  ref={inputRef}
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Skriv svaret ditt..."
-                  disabled={streaming}
-                  className="input"
-                  style={{ flex: 1 }}
-                />
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={streaming || !input.trim()}
-                  style={{ flexShrink: 0, padding: '10px 16px' }}
-                >
-                  {streaming ? (
-                    <span style={{ fontFamily: '"Press Start 2P"', fontSize: 7 }}>...</span>
-                  ) : (
-                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
+        {cleared ? (
+          <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', padding: '4px 0' }}>
+            Veiledning fullført. Rull opp for å lese samtalen, eller gå videre til refleksjon.
+          </p>
+        ) : (
+          <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'flex-end', gap: 9 }}>
+            <input
+              ref={inputRef}
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Skriv til Abel…"
+              disabled={streaming}
+              className="input"
+              style={{ flex: 1 }}
+            />
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={streaming || !input.trim()}
+              style={{ flexShrink: 0, height: 44, padding: '0 16px' }}
+            >
+              {streaming ? '…' : 'Send'}
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

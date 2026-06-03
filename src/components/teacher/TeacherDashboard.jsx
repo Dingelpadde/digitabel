@@ -346,7 +346,7 @@ export default function TeacherDashboard({ onLogout }) {
                           </span>
                         </div>
 
-                        <PixelProgressBar pct={pct} color={pct === 100 ? '#6ab04c' : '#e8b87a'} />
+                        <PixelProgressBar pct={pct} color={pct === 100 ? '#6ab04c' : '#e87ab0'} />
 
                         <div style={{ display: 'flex', gap: 12, fontSize: 11, marginTop: 10, marginBottom: 12 }}>
                           <span style={{ color: '#6ab04c' }}>{stats.cleared} cleared</span>
