@@ -4,7 +4,6 @@ import {
   supabase,
   getPrepAnswers,
   getChatMessages,
-  getReflection,
 } from '../../lib/supabase'
 import { ASSIGNMENTS } from '../../data/assignments'
 import StatusBadge from '../shared/StatusBadge'
@@ -18,7 +17,6 @@ export default function StudentDetail({ onLogout }) {
   const [saRecord, setSaRecord] = useState(null)
   const [prepAnswers, setPrepAnswers] = useState([])
   const [chatMessages, setChatMessages] = useState([])
-  const [reflection, setReflection] = useState(null)
   const [loading, setLoading] = useState(true)
   const [detailLoading, setDetailLoading] = useState(false)
 
@@ -53,18 +51,15 @@ export default function StudentDetail({ onLogout }) {
       return
     }
     try {
-      const [answers, messages, ref] = await Promise.all([
+      const [answers, messages] = await Promise.all([
         getPrepAnswers(sa.id),
         getChatMessages(sa.id),
-        getReflection(sa.id),
       ])
       setPrepAnswers(answers)
       setChatMessages(messages)
-      setReflection(ref)
     } catch {
       setPrepAnswers([])
       setChatMessages([])
-      setReflection(null)
     } finally {
       setDetailLoading(false)
     }
@@ -103,7 +98,7 @@ export default function StudentDetail({ onLogout }) {
         {/* Tilbake + student-info */}
         <div style={{ padding: '16px', borderBottom: '2px solid var(--color-border)' }}>
           <button
-            onClick={() => navigate('/teacher')}
+            onClick={() => navigate('/admin')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -253,6 +248,37 @@ export default function StudentDetail({ onLogout }) {
               <StatusBadge status={getStatus(selected.id)} />
             </div>
 
+            {/* Synopsis */}
+            {saRecord?.synopsis && (
+              <section
+                className="card-featured"
+                style={{ padding: 20 }}
+              >
+                <p
+                  style={{
+                    fontFamily: '"Press Start 2P"',
+                    fontSize: 7,
+                    color: 'var(--color-chroma-pink)',
+                    letterSpacing: '0.06em',
+                    marginBottom: 14,
+                  }}
+                >
+                  SYNOPSIS
+                </p>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: 'var(--color-text)',
+                    lineHeight: 1.75,
+                    fontFamily: 'var(--font-body)',
+                    margin: 0,
+                  }}
+                >
+                  {saRecord.synopsis}
+                </p>
+              </section>
+            )}
+
             {/* Forberedelsessvar */}
             <section className="card" style={{ padding: 20 }}>
               <p
@@ -355,50 +381,6 @@ export default function StudentDetail({ onLogout }) {
               )}
             </section>
 
-            {/* Refleksjon */}
-            <section className="card" style={{ padding: 20 }}>
-              <p
-                style={{
-                  fontFamily: '"Press Start 2P"',
-                  fontSize: 7,
-                  color: 'var(--color-text-muted)',
-                  letterSpacing: '0.06em',
-                  marginBottom: 16,
-                }}
-              >
-                REFLEKSJON
-              </p>
-              {!reflection ? (
-                <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>Ingen refleksjon sendt inn ennå.</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                  {[
-                    { label: 'Hva lærte de?', value: reflection.what_learned },
-                    { label: 'Hva endret de?', value: reflection.what_changed },
-                    { label: 'Hva ville de gjort annerledes?', value: reflection.what_differently },
-                  ].map((r) => (
-                    <div key={r.label}>
-                      <p style={{ fontSize: 11, color: 'var(--color-text-muted)', marginBottom: 6, fontWeight: 500 }}>
-                        {r.label}
-                      </p>
-                      <div
-                        style={{
-                          background: 'rgba(106,176,76,0.08)',
-                          border: '2px solid rgba(106,176,76,0.4)',
-                          boxShadow: '2px 2px 0 #000',
-                          padding: '10px 14px',
-                          fontSize: 13,
-                          color: 'var(--color-text)',
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        {r.value}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </section>
 
           </div>
         )}

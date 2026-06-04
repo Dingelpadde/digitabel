@@ -168,6 +168,7 @@ export default function AssignmentDetail() {
             prepAnswers={prepAnswers}
             initialMessages={chatMessages}
             onCleared={handleCleared}
+            studentName={student.name}
           />
         )}
 

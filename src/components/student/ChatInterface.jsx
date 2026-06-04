@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { saveChatMessage, upsertStudentAssignment } from '../../lib/supabase'
+import { saveChatMessage, upsertStudentAssignment, saveSynopsis } from '../../lib/supabase'
 import CharacterSprite from '../character/CharacterSprite'
 import { DIGITABEL_VOICE } from '../../data/personality'
 
@@ -51,6 +51,7 @@ export default function ChatInterface({
   prepAnswers,
   initialMessages,
   onCleared,
+  studentName,
 }) {
   const [messages, setMessages] = useState(initialMessages || [])
   const [input, setInput] = useState('')
@@ -134,6 +135,26 @@ export default function ChatInterface({
             assignmentId: studentAssignment.assignment_id,
             status: 'cleared',
           })
+
+          // Generer og lagre synopsis i bakgrunnen — blokkerer ikke flyten
+          ;(async () => {
+            try {
+              const res = await fetch('/api/synopsis', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  messages: newMessages,
+                  assignmentTitle: assignment.title,
+                  studentName: studentName || '',
+                }),
+              })
+              if (res.ok) {
+                const { synopsis } = await res.json()
+                if (synopsis) await saveSynopsis(updated.id || studentAssignment.id, synopsis)
+              }
+            } catch { /* synopsis er valgfritt — fortsetter uansett */ }
+          })()
+
           onCleared(updated, newMessages)
         } catch {
           onCleared({ ...studentAssignment, status: 'cleared' }, newMessages)

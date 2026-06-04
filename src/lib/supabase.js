@@ -23,10 +23,10 @@ export async function getStudents() {
   return data
 }
 
-export async function upsertStudent({ name, email, phone }) {
+export async function upsertStudent({ name, email, consent_given_at, kull }) {
   const { data, error } = await supabase
     .from('students')
-    .upsert({ name, email, phone }, { onConflict: 'name' })
+    .upsert({ name, email, consent_given_at, kull }, { onConflict: 'email' })
     .select()
     .single()
   if (error) throw error
@@ -109,6 +109,26 @@ export async function saveChatMessage(studentAssignmentId, role, content) {
     .single()
   if (error) throw error
   return data
+}
+
+// ─── Synopsis ─────────────────────────────────────────────────────────────────
+
+export async function saveSynopsis(studentAssignmentId, synopsis) {
+  const { error } = await supabase
+    .from('student_assignments')
+    .update({ synopsis })
+    .eq('id', studentAssignmentId)
+  if (error) throw error
+}
+
+export async function getSynopsis(studentAssignmentId) {
+  const { data, error } = await supabase
+    .from('student_assignments')
+    .select('synopsis')
+    .eq('id', studentAssignmentId)
+    .single()
+  if (error) throw error
+  return data?.synopsis || null
 }
 
 // ─── Reflections ──────────────────────────────────────────────────────────────

@@ -150,11 +150,11 @@ export default function Landing() {
           <button
             type="button"
             className="role fagleder"
-            onClick={() => navigate('/teacher')}
+            onClick={() => navigate('/project')}
           >
             <span className="badge">02</span>
-            <span className="name" data-text="Faglærer">Faglærer</span>
-            <p className="desc">Følg med på studentene og samtalene deres.</p>
+            <span className="name" data-text="Planlegging">Planlegging</span>
+            <p className="desc">Lag en realistisk milepælplan for prosjektet ditt.</p>
             <span className="go">Fortsett <span className="arrow">→</span></span>
           </button>
         </nav>

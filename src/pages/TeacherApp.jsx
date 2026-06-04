@@ -27,7 +27,7 @@ export default function TeacherApp() {
     <Routes>
       <Route path="/" element={<TeacherDashboard onLogout={handleLogout} />} />
       <Route path="/student/:studentId" element={<StudentDetail onLogout={handleLogout} />} />
-      <Route path="*" element={<Navigate to="/teacher" replace />} />
+      <Route path="*" element={<Navigate to="/admin" replace />} />
     </Routes>
   )
 }
