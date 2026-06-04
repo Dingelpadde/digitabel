@@ -192,9 +192,22 @@ export default function AssignmentDetail() {
               Du har fullført veiledningen med Digitabel for <strong style={{ color: 'var(--color-text)' }}>{assignment.title}</strong>.
               Du er klar for veiledningen med Abel.
             </p>
-            <button onClick={() => navigate('/student')} className="btn-primary">
-              Tilbake til oppgavene
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
+              <button onClick={() => navigate('/student')} className="btn-primary">
+                Tilbake til oppgavene
+              </button>
+              {chatMessages.length > 0 && (
+                <button
+                  onClick={() => setStep(STEP.CHAT)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    fontSize: 12, color: 'var(--color-text-muted)', textDecoration: 'underline',
+                  }}
+                >
+                  Les samtalen med Digitabel
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

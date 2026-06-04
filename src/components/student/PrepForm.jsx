@@ -46,12 +46,12 @@ export default function PrepForm({ assignment, student, onComplete }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const allFilled = answers.every((a) => a.trim().length > 10)
+  const allFilled = answers.every((a) => a.trim().length > 1)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!allFilled) {
-      setError('Svar på alle spørsmålene før du går videre. (Minst 10 tegn på hvert.)')
+      setError('Svar på alle spørsmålene før du går videre.')
       return
     }
     setLoading(true)
@@ -101,7 +101,7 @@ export default function PrepForm({ assignment, student, onComplete }) {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
         {assignment.prepQuestions.map((question, i) => {
-          const ok = answers[i].trim().length >= 10
+          const ok = answers[i].trim().length > 1
           return (
             <div key={i} className="card">
               <label style={{ display: 'block', fontSize: 14, color: 'var(--color-text)', marginBottom: 12, lineHeight: 1.5 }}>
@@ -129,9 +129,11 @@ export default function PrepForm({ assignment, student, onComplete }) {
                 placeholder="Skriv svaret ditt her…"
                 className="textarea"
               />
-              <p style={{ fontSize: 11, marginTop: 6, color: ok ? '#6ab04c' : 'var(--color-text-muted)' }}>
-                {answers[i].trim().length} tegn
-              </p>
+              {answers[i].trim().length > 0 && !ok && (
+                <p style={{ fontSize: 11, marginTop: 6, color: 'var(--color-text-muted)' }}>
+                  Skriv litt mer
+                </p>
+              )}
             </div>
           )
         })}
@@ -153,7 +155,7 @@ export default function PrepForm({ assignment, student, onComplete }) {
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
           <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
-            {answers.filter((a) => a.trim().length >= 10).length} av {assignment.prepQuestions.length} besvart
+            {answers.filter((a) => a.trim().length > 1).length} av {assignment.prepQuestions.length} besvart
           </p>
           <button type="submit" disabled={loading || !allFilled} className="btn-primary">
             {loading ? 'Lagrer…' : 'Start veiledning →'}

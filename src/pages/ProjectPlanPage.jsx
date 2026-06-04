@@ -17,8 +17,8 @@ const QUESTIONS = [
   },
   {
     id: 'days',
-    label: 'Hvilke dager kan du jobbe — og hvilke er du ikke tilgjengelig?',
-    placeholder: 'F.eks. kan jobbe man–ons–fre, ikke tilgjengelig torsdager og 20–22 jun...',
+    label: 'Hvilke dager kan du jobbe, og hvilke er du ikke tilgjengelig?',
+    placeholder: 'F.eks. kan jobbe man, ons, fre. Ikke tilgjengelig torsdager og 20-22 jun.',
     type: 'textarea',
   },
   {
@@ -235,7 +235,7 @@ export default function ProjectPlanPage() {
                 Din plan
               </h2>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
-                Svar på fire spørsmål — Digitabel lager en realistisk milepælplan til deg.
+                Svar på fire spørsmål, så lager Digitabel en realistisk milepælplan til deg.
               </p>
             </div>
 
@@ -324,7 +324,7 @@ export default function ProjectPlanPage() {
                 <textarea
                   className="textarea"
                   rows={3}
-                  placeholder="Beskriv hva du vil endre — f.eks. forskjøv fristen, har færre fridager..."
+                  placeholder="Beskriv hva du vil endre. F.eks: forskjøv fristen, har færre fridager..."
                   value={editMsg}
                   onChange={(e) => setEditMsg(e.target.value)}
                 />

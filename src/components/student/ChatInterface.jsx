@@ -37,7 +37,7 @@ function hasMentalHealthContent(text) {
 
 const MENTAL_HEALTH_RESPONSE = `Jeg hører at du har det tungt akkurat nå. Det er modig av deg å si det.
 
-Jeg er her som et faglig verktøy og er ikke den rette til å hjelpe med dette — men det finnes folk som er det.
+Jeg er her som et faglig verktøy og er ikke den rette til å hjelpe med dette. Men det finnes folk som er det.
 
 Ta kontakt med Studentsamskipnadens helsetjeneste:
 SiO Helse: 22 85 32 00
@@ -60,6 +60,7 @@ export default function ChatInterface({
   const [cleared, setCleared] = useState(
     initialMessages?.some((m) => m.content.includes(CLEARED_MARKER)) || false
   )
+  const [clearedData, setClearedData] = useState(null) // { sa, messages } — venter på knappeklikk
   const [error, setError] = useState('')
   const [pose, setPose] = useState('idle')
   const bottomRef = useRef(null)
@@ -136,7 +137,7 @@ export default function ChatInterface({
             status: 'cleared',
           })
 
-          // Generer og lagre synopsis i bakgrunnen — blokkerer ikke flyten
+          // Generer og lagre synopsis i bakgrunnen
           ;(async () => {
             try {
               const res = await fetch('/api/synopsis', {
@@ -152,12 +153,13 @@ export default function ChatInterface({
                 const { synopsis } = await res.json()
                 if (synopsis) await saveSynopsis(updated.id || studentAssignment.id, synopsis)
               }
-            } catch { /* synopsis er valgfritt — fortsetter uansett */ }
+            } catch { /* synopsis er valgfritt */ }
           })()
 
-          onCleared(updated, newMessages)
+          // Ikke naviger bort med en gang — student skal se sluttmeldingen
+          setClearedData({ sa: updated, messages: newMessages })
         } catch {
-          onCleared({ ...studentAssignment, status: 'cleared' }, newMessages)
+          setClearedData({ sa: { ...studentAssignment, status: 'cleared' }, messages: newMessages })
         }
       }
     } catch (err) {
@@ -421,9 +423,20 @@ export default function ChatInterface({
         }}
       >
         {cleared ? (
-          <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', padding: '4px 0' }}>
-            Veiledning fullført. Rull opp for å lese samtalen.
-          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--color-text-muted)', margin: 0 }}>
+              Veiledning fullført. Rull opp for å lese samtalen.
+            </p>
+            {clearedData && (
+              <button
+                className="btn-primary"
+                onClick={() => onCleared(clearedData.sa, clearedData.messages)}
+                style={{ width: '100%' }}
+              >
+                Tilbake til oppgavene
+              </button>
+            )}
+          </div>
         ) : (
           <form onSubmit={handleSend} style={{ display: 'flex', alignItems: 'flex-end', gap: 9 }}>
             <input

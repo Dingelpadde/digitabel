@@ -210,7 +210,7 @@ export default function StudentLogin() {
               onClick={handleConsentContinue}
               style={{ width: '100%', marginTop: 8 }}
             >
-              Jeg samtykker — gå videre
+              Jeg samtykker, gå videre
             </button>
           </div>
         )}

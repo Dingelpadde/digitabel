@@ -438,7 +438,7 @@ export default function TeacherDashboard({ onLogout }) {
                       return (
                         <tr
                           key={student.id}
-                          onClick={() => navigate(`/teacher/student/${student.id}`)}
+                          onClick={() => navigate(`/admin/student/${student.id}`)}
                           style={{
                             borderBottom: idx < students.length - 1 ? '1px solid var(--color-border)' : 'none',
                             cursor: 'pointer',
@@ -503,7 +503,7 @@ export default function TeacherDashboard({ onLogout }) {
                       {inactiveStudents.map((s) => (
                         <button
                           key={s.id}
-                          onClick={() => navigate(`/teacher/student/${s.id}`)}
+                          onClick={() => navigate(`/admin/student/${s.id}`)}
                           style={{
                             background: 'rgba(231,76,60,0.1)',
                             border: '2px solid var(--color-danger)',

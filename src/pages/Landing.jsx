@@ -131,7 +131,7 @@ export default function Landing() {
               lineHeight: 1.55,
             }}
           >
-            Snakk med Digitabel, forbered deg til veiledningen med Abel, og hold oversikt — på ett sted.
+            Snakk med Digitabel, forbered deg til veiledningen med Abel, og hold oversikt. Alt på ett sted.
           </p>
         </div>
 
