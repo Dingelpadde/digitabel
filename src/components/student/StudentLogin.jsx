@@ -19,7 +19,7 @@ export default function StudentLogin() {
   const [error, setError] = useState('')
 
   // Samtykke-tilstand
-  const [consent, setConsent] = useState({ history: false, email: false, gdpr: false })
+  const [consent, setConsent] = useState({ history: false, email: false })
 
   // Registrerings-tilstand
   const [form, setForm] = useState({ name: '', email: '', kull: '' })
@@ -27,7 +27,7 @@ export default function StudentLogin() {
   // Tilbakevendende bruker — bare e-post
   const [returnEmail, setReturnEmail] = useState('')
 
-  const allConsented = consent.history && consent.email && consent.gdpr
+  const allConsented = consent.history && consent.email
 
   const handleConsentContinue = () => {
     if (!allConsented) {
@@ -145,23 +145,25 @@ export default function StudentLogin() {
         {step === STEP_CONSENT && (
           <div className="card-featured" style={{ padding: 24 }}>
             <p className="pixel-label" style={{ marginBottom: 16 }}>Samtykkeerklæring</p>
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 8, lineHeight: 1.7 }}>
+              Digitabel er et frivillig og eksperimentelt læringsverktøy for DiP-programmet, laget for å hjelpe deg forberede deg til veiledning og holde oversikt over prosjektene dine. Dette er ikke et offisielt verktøy fra Fagskolen Kristiania.
+            </p>
             <p style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 20, lineHeight: 1.7 }}>
-              Digitabel er et læringsverktøy for DiP-programmet ved Fagskolen Kristiania.
-              Les og kryss av for alle punktene nedenfor.
+              Del derfor ikke noe du ikke er komfortabel med at andre ser.
+            </p>
+
+            <p style={{ fontSize: 12, color: 'var(--color-text-muted)', marginBottom: 12, letterSpacing: '0.04em' }}>
+              Ved å bruke Digitabel godkjenner du:
             </p>
 
             {[
               {
                 key: 'history',
-                label: 'Samtalehistorikk og opplastet materiale lagres og er synlig for faglærer (Abel Christoffer).',
+                label: 'At samtalene dine lagres og er synlige for faglærer.',
               },
               {
                 key: 'email',
-                label: 'E-postadressen min brukes til faglige varsler og ukentlige oppdateringer.',
-              },
-              {
-                key: 'gdpr',
-                label: 'Personopplysningene mine behandles i henhold til Fagskolen Kristianias personvernpolicy. Samtykket kan trekkes tilbake via innstillinger.',
+                label: 'At e-postadressen din brukes til faglige påminnelser.',
               },
             ].map(({ key, label }) => (
               <label
