@@ -1,7 +1,45 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { savePrepAnswers, upsertStudentAssignment } from '../../lib/supabase'
 
 export default function PrepForm({ assignment, student, onComplete }) {
+  const starsRef = useRef(null)
+
+  useEffect(() => {
+    const layer = starsRef.current
+    if (!layer) return
+    const palettes = [
+      { c1: '#d6eaff', c2: '#5aa0ff', c3: '#2b5fd0' },
+      { c1: '#e3d4ff', c2: '#b07ae8', c3: '#6a3fb0' },
+      { c1: '#ffd9f2', c2: '#e87ad6', c3: '#b0468f' },
+    ]
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    function spawn() {
+      if (!layer || layer.childElementCount > 20) return
+      const s = document.createElement('span')
+      s.className = 'pstar'
+      const pal = palettes[(Math.random() * palettes.length) | 0]
+      const p = (2 + Math.random() * 3).toFixed(1)
+      s.style.setProperty('--p', p + 'px')
+      s.style.setProperty('--c1', pal.c1)
+      s.style.setProperty('--c2', pal.c2)
+      s.style.setProperty('--c3', pal.c3)
+      s.style.left = Math.random() * 98 + 'vw'
+      s.style.top = Math.random() * 96 + 'vh'
+      s.style.animationDuration = (2 + Math.random() * 2.5).toFixed(2) + 's'
+      layer.appendChild(s)
+      s.addEventListener('animationend', () => s.remove())
+    }
+    let timers = [], interval
+    if (!reduce) {
+      for (let i = 0; i < 10; i++) timers.push(setTimeout(spawn, i * 150))
+      interval = setInterval(spawn, 450)
+    }
+    return () => {
+      timers.forEach(clearTimeout)
+      if (interval) clearInterval(interval)
+      if (layer) layer.innerHTML = ''
+    }
+  }, [])
   const [answers, setAnswers] = useState(
     assignment.prepQuestions.map(() => '')
   )
@@ -51,7 +89,9 @@ export default function PrepForm({ assignment, student, onComplete }) {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 16px' }}>
+    <div style={{ position: 'relative' }}>
+      <div className="stars" aria-hidden="true" ref={starsRef} />
+    <div style={{ maxWidth: 600, margin: '0 auto', padding: '32px 16px', position: 'relative', zIndex: 1 }}>
       <div style={{ marginBottom: 24 }}>
         <h2 className="display-title" style={{ fontSize: 22, margin: 0 }}>Forberedelsesspørsmål</h2>
         <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 6, lineHeight: 1.55 }}>
@@ -120,6 +160,7 @@ export default function PrepForm({ assignment, student, onComplete }) {
           </button>
         </div>
       </form>
+    </div>
     </div>
   )
 }

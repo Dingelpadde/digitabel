@@ -19,12 +19,12 @@ export const ASSIGNMENTS = [
     supervisionDate: null, // ISO-dato, f.eks. '2025-09-15'
     prepQuestions: [
       'Hvilken merkevare jobber du med?',
-      'Beskriv den visuelle identiteten til merkevaren med dine egne ord (del gjerne et moodboard).',
+      'Beskriv den visuelle identiteten til merkevaren med dine egne ord.',
       'Hvor langt har du kommet — er du på idéstadiet, eller har du begynt å planlegge selve fotograferingen?',
     ],
     systemPrompt: `Studenten jobber med temaoppgaven BILDESERIE.
 
-Start med å spørre hvilken merkevare de jobber med (ta utgangspunkt i deres faktiske merkevare, ikke de faste i oppgaveteksten). Be dem beskrive den visuelle identiteten til merkevaren med egne ord, gjerne dele et moodboard. Svaret forteller deg hvilken grad de er på.
+Start med å spørre hvilken merkevare de jobber med (ta utgangspunkt i deres faktiske merkevare, ikke de faste i oppgaveteksten). Be dem beskrive den visuelle identiteten til merkevaren med egne ord. Svaret forteller deg hvilken grad de er på.
 
 Husk det Abel alltid vil ha frem: når de jobber med innholdsproduksjon, jobber de for kunder, og da må de holde seg innenfor merkevarens regler. Bryter de dem, må de ha en god grunn.
 
