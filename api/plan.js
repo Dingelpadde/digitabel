@@ -28,7 +28,7 @@ export default async function handler(req) {
   let body
   try { body = await req.json() } catch { return new Response('Invalid JSON', { status: 400 }) }
 
-  const { prepAnswers, editMessage, existingPlan } = body
+  const { prepAnswers, editMessage, existingPlan, themeContext } = body
   if (!prepAnswers) return new Response('Missing prepAnswers', { status: 400 })
 
   const apiKey = process.env.ANTHROPIC_API_KEY
@@ -36,9 +36,20 @@ export default async function handler(req) {
 
   const client = new Anthropic({ apiKey })
 
+  // Build theme context block
+  let themeBlock = ''
+  if (themeContext) {
+    themeBlock = `\n\nTema: ${themeContext.title}`
+    if (themeContext.supervisionDate) {
+      const d = new Date(themeContext.supervisionDate + 'T12:00:00')
+      const dateStr = d.toLocaleDateString('no-NO', { day: 'numeric', month: 'long', year: 'numeric' })
+      themeBlock += `\nVeiledningsdato med faglærer Abel: ${dateStr}. Legg inn denne datoen som en fast milepæl med tittelen "Klar til veiledning" og planlegg alle andre milepæler frem mot den.`
+    }
+  }
+
   const userMsg = editMessage && existingPlan
-    ? `Prosjektsvar:\n${prepAnswers}\n\nEksisterende plan:\n${JSON.stringify(existingPlan, null, 2)}\n\nStudentens endringsønske:\n${editMessage}\n\nOppdater planen basert på endringsønsket.`
-    : `Prosjektsvar:\n${prepAnswers}\n\nLag en milepælplan.`
+    ? `Prosjektsvar:\n${prepAnswers}${themeBlock}\n\nEksisterende plan:\n${JSON.stringify(existingPlan, null, 2)}\n\nStudentens endringsønske:\n${editMessage}\n\nOppdater planen basert på endringsønsket.`
+    : `Prosjektsvar:\n${prepAnswers}${themeBlock}\n\nLag en milepælplan.`
 
   try {
     const response = await client.messages.create({

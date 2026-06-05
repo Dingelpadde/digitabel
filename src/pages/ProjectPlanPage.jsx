@@ -2,11 +2,18 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MilestoneTimeline from '../components/student/MilestoneTimeline'
 
+const SLOTS = [
+  { id: 'tema-1-bildeserie',         label: 'Bildeserie',                          order: '01', supervisionDate: '2026-09-09' },
+  { id: 'tema-2-film',               label: 'Film og postproduksjon',               order: '02', supervisionDate: '2026-10-22' },
+  { id: 'tema-3-historiefortelling', label: 'Historiefortelling',                   order: '03', supervisionDate: null },
+  { id: 'valgfritt',                 label: 'Valgfritt prosjekt',                   order: '04', supervisionDate: null },
+]
+
 const QUESTIONS = [
   {
     id: 'project',
-    label: 'Hva slags prosjekt jobber du med?',
-    placeholder: 'F.eks. kortfilm, fotoserie, dokumentar...',
+    label: 'Hva jobber du med?',
+    placeholder: 'F.eks. kortfilm for Nike, fotoserie for en lokal kafé...',
     type: 'textarea',
   },
   {
@@ -29,11 +36,21 @@ const QUESTIONS = [
   },
 ]
 
-const STORAGE_KEY = 'digitabel_project_plan'
+const STORAGE_KEY = 'digitabel_project_plans'
+
+function formatSupDate(iso) {
+  const months = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des']
+  const d = new Date(iso + 'T12:00:00')
+  return `${d.getDate()}. ${months[d.getMonth()]}`
+}
 
 export default function ProjectPlanPage() {
   const navigate = useNavigate()
   const starsRef = useRef(null)
+
+  // slots[0..3] = { plan, editUsed, answers } | null
+  const [slots, setSlots] = useState([null, null, null, null])
+  const [activeSlot, setActiveSlot] = useState(null) // null = picker, 0-3 = open slot
 
   const [step, setStep] = useState('form') // form | generating | plan | editing | done
   const [answers, setAnswers] = useState({ project: '', deadline: '', days: '', time: '' })
@@ -41,20 +58,14 @@ export default function ProjectPlanPage() {
   const [editMsg, setEditMsg] = useState('')
   const [editUsed, setEditUsed] = useState(false)
   const [error, setError] = useState('')
-  const printRef = useRef(null)
 
-  // Load saved plan from localStorage
+  // Load saved slots from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
-        const { plan: savedPlan, editUsed: eu, answers: savedAnswers } = JSON.parse(saved)
-        if (savedPlan) {
-          setPlan(savedPlan)
-          setEditUsed(eu || false)
-          if (savedAnswers) setAnswers(savedAnswers)
-          setStep('done')
-        }
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) setSlots(parsed)
       }
     } catch { /* ignore */ }
   }, [])
@@ -98,6 +109,39 @@ export default function ProjectPlanPage() {
     }
   }, [])
 
+  const openSlot = (i) => {
+    setActiveSlot(i)
+    const saved = slots[i]
+    if (saved?.plan) {
+      setPlan(saved.plan)
+      setAnswers(saved.answers || { project: '', deadline: '', days: '', time: '' })
+      setEditUsed(saved.editUsed || false)
+      setStep('done')
+    } else {
+      setPlan(null)
+      setAnswers({ project: '', deadline: '', days: '', time: '' })
+      setEditUsed(false)
+      setStep('form')
+    }
+    setError('')
+    setEditMsg('')
+  }
+
+  const saveSlot = (i, newPlan, eu, ans) => {
+    const updated = [...slots]
+    updated[i] = { plan: newPlan, editUsed: eu, answers: ans }
+    setSlots(updated)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+  }
+
+  const handleDeleteSlot = () => {
+    const updated = [...slots]
+    updated[activeSlot] = null
+    setSlots(updated)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    setActiveSlot(null)
+  }
+
   const prepAnswersText = QUESTIONS
     .map((q) => `${q.label}\n${answers[q.id]}`)
     .join('\n\n')
@@ -105,12 +149,17 @@ export default function ProjectPlanPage() {
   const generatePlan = async (editMessage = null) => {
     setError('')
     setStep(editMessage ? 'editing' : 'generating')
+    const slot = SLOTS[activeSlot]
+    const themeContext = slot.id !== 'valgfritt'
+      ? { title: slot.label, supervisionDate: slot.supervisionDate }
+      : null
     try {
       const res = await fetch('/api/plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prepAnswers: prepAnswersText,
+          themeContext,
           ...(editMessage ? { editMessage, existingPlan: plan } : {}),
         }),
       })
@@ -123,7 +172,7 @@ export default function ProjectPlanPage() {
       setPlan(newPlan)
       setEditUsed(eu)
       setStep(eu ? 'done' : 'plan')
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ plan: newPlan, editUsed: eu, answers }))
+      saveSlot(activeSlot, newPlan, eu, answers)
     } catch (err) {
       setError('Klarte ikke å generere plan. Sjekk at API-nøkkel er konfigurert.')
       setStep(editMessage ? 'plan' : 'form')
@@ -146,17 +195,8 @@ export default function ProjectPlanPage() {
     setEditMsg('')
   }
 
-  const handleNewPlan = () => {
-    localStorage.removeItem(STORAGE_KEY)
-    setPlan(null)
-    setEditUsed(false)
-    setAnswers({ project: '', deadline: '', days: '', time: '' })
-    setEditMsg('')
-    setError('')
-    setStep('form')
-  }
-
   const isGenerating = step === 'generating' || step === 'editing'
+  const currentSlot = activeSlot !== null ? SLOTS[activeSlot] : null
 
   return (
     <div style={{ minHeight: '100dvh', background: 'var(--color-bg)', position: 'relative' }}>
@@ -166,22 +206,16 @@ export default function ProjectPlanPage() {
       <header
         className="no-print"
         style={{
-          position: 'relative',
-          zIndex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 14,
+          position: 'relative', zIndex: 1,
+          display: 'flex', alignItems: 'center', gap: 14,
           padding: '12px 16px',
           borderBottom: '1px solid var(--color-border)',
           background: 'var(--color-bg)',
         }}
       >
         <button
-          onClick={() => navigate('/')}
-          style={{
-            background: 'none', border: 'none', cursor: 'pointer',
-            color: 'var(--color-text-muted)', display: 'flex', flexShrink: 0,
-          }}
+          onClick={() => activeSlot !== null ? setActiveSlot(null) : navigate('/')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', display: 'flex', flexShrink: 0 }}
           aria-label="Tilbake"
         >
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -189,19 +223,19 @@ export default function ProjectPlanPage() {
           </svg>
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p className="pixel-label" style={{ fontSize: 6 }}>Digitabel</p>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16,
-              color: 'var(--color-text)', margin: '2px 0 0',
-            }}
-          >
-            Prosjektplanlegging
+          <p className="pixel-label" style={{ fontSize: 6 }}>
+            {activeSlot !== null ? `Prosjektplanlegging · ${currentSlot.order}` : 'Digitabel'}
+          </p>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 16, color: 'var(--color-text)', margin: '2px 0 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {activeSlot !== null
+              ? (slots[activeSlot]?.answers?.project?.trim() || currentSlot.label)
+              : 'Prosjektplanlegging'
+            }
           </h1>
         </div>
-        {step === 'done' && (
+        {activeSlot !== null && step === 'done' && slots[activeSlot] && (
           <button
-            onClick={handleNewPlan}
+            onClick={handleDeleteSlot}
             style={{
               background: 'none', border: '1px solid var(--color-border)',
               color: 'var(--color-text-muted)', fontFamily: 'var(--font-body)',
@@ -209,33 +243,90 @@ export default function ProjectPlanPage() {
               padding: '6px 10px', cursor: 'pointer', flexShrink: 0,
             }}
           >
-            Ny plan
+            Slett plan
           </button>
         )}
       </header>
 
       {/* Main */}
-      <main
-        ref={printRef}
-        style={{
-          position: 'relative', zIndex: 1,
-          maxWidth: 600, margin: '0 auto', padding: '32px 16px 48px',
-        }}
-      >
+      <main style={{ position: 'relative', zIndex: 1, maxWidth: 600, margin: '0 auto', padding: '32px 16px 48px' }}>
 
-        {/* ── FORM ── */}
-        {step === 'form' && (
+        {/* ── SLOT PICKER ── */}
+        {activeSlot === null && (
           <>
             <div style={{ marginBottom: 28 }}>
               <h2
                 className="display-title glitch"
-                data-text="Din plan"
-                style={{ fontSize: 'clamp(24px,6vw,32px)', margin: '0 0 8px', lineHeight: 1.05 }}
+                data-text="Milepælplaner"
+                style={{ fontSize: 'clamp(22px,6vw,30px)', margin: '0 0 8px', lineHeight: 1.05 }}
               >
-                Din plan
+                Milepælplaner
+              </h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                Velg et prosjekt. Digitabel lager en realistisk plan med milepæler frem mot fristen.
+              </p>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              {SLOTS.map((slot, i) => {
+                const saved = slots[i]
+                const projectLabel = saved?.answers?.project?.trim()
+                return (
+                  <button
+                    key={slot.id}
+                    onClick={() => openSlot(i)}
+                    className="card"
+                    style={{
+                      padding: '18px 16px', textAlign: 'left', cursor: 'pointer',
+                      width: '100%', display: 'flex', flexDirection: 'column', gap: 8,
+                      transition: 'transform 80ms, box-shadow 80ms',
+                    }}
+                    onMouseDown={(e) => {
+                      e.currentTarget.style.transform = 'translate(2px,2px)'
+                      e.currentTarget.style.boxShadow = '2px 2px 0 #000'
+                    }}
+                    onMouseUp={(e) => {
+                      e.currentTarget.style.transform = 'none'
+                      e.currentTarget.style.boxShadow = ''
+                    }}
+                  >
+                    <span style={{ fontFamily: 'var(--font-pixel)', fontSize: 7, color: 'var(--color-text-muted)', letterSpacing: '0.06em' }}>
+                      {slot.order}
+                    </span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--color-text)', lineHeight: 1.3 }}>
+                      {projectLabel || slot.label}
+                    </span>
+                    {slot.supervisionDate && (
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--color-text-muted)', letterSpacing: '0.04em' }}>
+                        Veiledning {formatSupDate(slot.supervisionDate)}
+                      </span>
+                    )}
+                    <span style={{
+                      fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: '0.08em',
+                      textTransform: 'uppercase', marginTop: 4,
+                      color: saved ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                    }}>
+                      {saved ? 'Se plan ✦' : 'Lag plan'}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
+
+        {/* ── FORM ── */}
+        {activeSlot !== null && step === 'form' && (
+          <>
+            <div style={{ marginBottom: 28 }}>
+              <h2 className="display-title" style={{ fontSize: 'clamp(20px,5vw,28px)', margin: '0 0 8px', lineHeight: 1.05 }}>
+                {currentSlot.label}
               </h2>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                 Svar på fire spørsmål, så lager Digitabel en realistisk milepælplan til deg.
+                {currentSlot.supervisionDate && (
+                  <> Veiledning med Abel er <strong style={{ color: 'var(--color-text)' }}>{formatSupDate(currentSlot.supervisionDate)}</strong>.</>
+                )}
               </p>
             </div>
 
@@ -284,16 +375,14 @@ export default function ProjectPlanPage() {
               )}
 
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button type="submit" className="btn-primary">
-                  Lag plan →
-                </button>
+                <button type="submit" className="btn-primary">Lag plan →</button>
               </div>
             </form>
           </>
         )}
 
         {/* ── GENERATING / EDITING ── */}
-        {isGenerating && (
+        {activeSlot !== null && isGenerating && (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20, padding: '60px 0' }}>
             <div style={{ display: 'flex', gap: 8 }}>
               <span className="typing-dot" />
@@ -307,14 +396,13 @@ export default function ProjectPlanPage() {
         )}
 
         {/* ── PLAN (vis tidslinje + rediger) ── */}
-        {step === 'plan' && plan && (
+        {activeSlot !== null && step === 'plan' && plan && (
           <>
             <div style={{ marginBottom: 32 }}>
               <p className="pixel-label" style={{ marginBottom: 6 }}>Milepælplan</p>
               <MilestoneTimeline plan={plan} />
             </div>
 
-            {/* Én-gangs redigering */}
             <div
               className="card no-print"
               style={{ padding: 20, marginTop: 16, borderColor: 'var(--color-chroma-blue)', boxShadow: '4px 4px 0 var(--color-chroma-blue)' }}
@@ -331,7 +419,7 @@ export default function ProjectPlanPage() {
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
                   <button
                     type="button"
-                    onClick={() => { setStep('done'); localStorage.setItem(STORAGE_KEY, JSON.stringify({ plan, editUsed: false, answers })) }}
+                    onClick={() => { setStep('done'); saveSlot(activeSlot, plan, false, answers) }}
                     style={{
                       background: 'none', border: 'none', cursor: 'pointer',
                       fontFamily: 'var(--font-body)', fontSize: 11, letterSpacing: '0.08em',
@@ -350,12 +438,11 @@ export default function ProjectPlanPage() {
         )}
 
         {/* ── DONE ── */}
-        {step === 'done' && plan && (
+        {activeSlot !== null && step === 'done' && plan && (
           <>
-            {/* Print-tittel — bare synlig ved utskrift */}
             <div className="print-only" style={{ display: 'none', marginBottom: 24 }}>
               <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700, margin: '0 0 4px', color: '#000' }}>
-                Milepælplan
+                Milepælplan — {currentSlot.label}
               </h2>
               <p style={{ fontFamily: 'monospace', fontSize: 11, color: '#555', margin: 0 }}>
                 Digitabel · {new Date().toLocaleDateString('no-NO')}

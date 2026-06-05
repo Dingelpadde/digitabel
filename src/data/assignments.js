@@ -16,7 +16,7 @@ export const ASSIGNMENTS = [
     title: 'Bildeserie',
     description:
       'Lag en bildeserie for en merkevare. Hold deg innenfor merkevarens visuelle identitet — og gjør bevisste valg av konsept, location og utstyr.',
-    supervisionDate: null, // ISO-dato, f.eks. '2025-09-15'
+    supervisionDate: '2026-09-09',
     prepQuestions: [
       'Hvilken merkevare jobber du med?',
       'Beskriv den visuelle identiteten til merkevaren med dine egne ord.',
@@ -44,7 +44,7 @@ Hjelp med enkle tips om fotoutstyr. Burde de bruke telelinse her? Vidvinkel pass
     title: 'Film og postproduksjon',
     description:
       'Lag en film for en merkevare. For mange er dette første møte med skikkelig film — der lys og lyd virkelig betyr noe. Idéen må henge sammen med merkevaren.',
-    supervisionDate: null,
+    supervisionDate: '2026-10-22',
     prepQuestions: [
       'Hvilket av oppgavealternativene har du valgt, og hvilken merkevare jobber du med?',
       'Hvorfor lager du denne filmen, hva vil du si med den, og hvor skal den vises?',
