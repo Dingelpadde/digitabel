@@ -131,7 +131,7 @@ export default function Landing() {
               lineHeight: 1.55,
             }}
           >
-            Snakk med Digitabel, forbered deg til veiledningen med Abel, og hold oversikt. Alt på ett sted.
+            Snakk med Digitabel, forbered deg til veiledningen, og hold oversikt. Alt på ett sted.
           </p>
         </div>
 
@@ -144,7 +144,7 @@ export default function Landing() {
           >
             <span className="badge">01</span>
             <span className="name" data-text="Student">Student</span>
-            <p className="desc">Ta en runde med Digitabel før du møter Abel til veiledning.</p>
+            <p className="desc">Ta en runde med Digitabel før veiledningen.</p>
             <span className="go">Fortsett <span className="arrow">→</span></span>
           </button>
           <button

@@ -132,7 +132,7 @@ export default function AssignmentList() {
             Temaoppgavene dine
           </h2>
           <p style={{ color: 'var(--color-text-muted)', fontSize: 13, marginTop: 6, lineHeight: 1.55 }}>
-            Ta en runde med Digitabel før hver veiledning med Abel.
+            Ta en runde med Digitabel før hver veiledning.
           </p>
 
           <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, flexWrap: 'wrap' }}>

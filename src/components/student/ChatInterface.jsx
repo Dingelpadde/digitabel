@@ -444,7 +444,7 @@ export default function ChatInterface({
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Skriv til Abel…"
+              placeholder="Skriv til Digitabel…"
               disabled={streaming}
               className="input"
               style={{ flex: 1 }}

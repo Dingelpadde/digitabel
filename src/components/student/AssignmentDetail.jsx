@@ -190,7 +190,7 @@ export default function AssignmentDetail() {
             <h2 className="display-title" style={{ fontSize: 26, margin: '0 0 8px' }}>Alt klart!</h2>
             <p style={{ color: 'var(--color-text-muted)', marginBottom: 24, lineHeight: 1.6 }}>
               Du har fullført veiledningen med Digitabel for <strong style={{ color: 'var(--color-text)' }}>{assignment.title}</strong>.
-              Du er klar for veiledningen med Abel.
+              Du er klar for veiledningen.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
               <button onClick={() => navigate('/student')} className="btn-primary">

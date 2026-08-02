@@ -325,7 +325,7 @@ export default function ProjectPlanPage() {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
                 Svar på fire spørsmål, så lager Digitabel en realistisk milepælplan til deg.
                 {currentSlot.supervisionDate && (
-                  <> Veiledning med Abel er <strong style={{ color: 'var(--color-text)' }}>{formatSupDate(currentSlot.supervisionDate)}</strong>.</>
+                  <> Veiledning er <strong style={{ color: 'var(--color-text)' }}>{formatSupDate(currentSlot.supervisionDate)}</strong>.</>
                 )}
               </p>
             </div>

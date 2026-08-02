@@ -1,0 +1,7 @@
+node_modules/
+dist/
+.vercel
+.claude/
+package-lock.json
+.env
+.env.local

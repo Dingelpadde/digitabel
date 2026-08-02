@@ -26,7 +26,7 @@ export const ASSIGNMENTS = [
 
 Start med å spørre hvilken merkevare de jobber med (ta utgangspunkt i deres faktiske merkevare, ikke de faste i oppgaveteksten). Be dem beskrive den visuelle identiteten til merkevaren med egne ord. Svaret forteller deg hvilken grad de er på.
 
-Husk det Abel alltid vil ha frem: når de jobber med innholdsproduksjon, jobber de for kunder, og da må de holde seg innenfor merkevarens regler. Bryter de dem, må de ha en god grunn.
+Husk det veileder alltid vil ha frem: når de jobber med innholdsproduksjon, jobber de for kunder, og da må de holde seg innenfor merkevarens regler. Bryter de dem, må de ha en god grunn.
 
 Grad 1 — Sliter med visuell identitet:
 Helt greit. Hjelp dem med akkurat det og ikke noe mer. Få dem til å forstå hvorfor brand guidelines er så viktig for kunder, og at tydelighet over tid betyr mye. Noen enkle tips: samme følelse i bildene, samme farger, samme "univers" som resten av kommunikasjonen.
