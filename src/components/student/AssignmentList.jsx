@@ -5,6 +5,18 @@ import { getStudentAssignments } from '../../lib/supabase'
 import { ASSIGNMENTS } from '../../data/assignments'
 import StatusBadge from '../shared/StatusBadge'
 
+const MONTHS = ['jan', 'feb', 'mar', 'apr', 'mai', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'des']
+
+function formatDate(iso) {
+  const d = new Date(iso + 'T12:00:00')
+  return `${d.getDate()}. ${MONTHS[d.getMonth()]}`
+}
+
+function isLocked(assignment) {
+  if (!assignment.startDate) return false
+  return new Date() < new Date(assignment.startDate + 'T00:00:00')
+}
+
 export default function AssignmentList() {
   const { student, logout } = useStudent()
   const navigate = useNavigate()
@@ -174,12 +186,20 @@ export default function AssignmentList() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {ASSIGNMENTS.map((assignment) => {
               const status = statuses[assignment.id] || 'not_started'
+              const locked = isLocked(assignment)
+              const Wrapper = locked ? 'div' : 'button'
               return (
-                <button
+                <Wrapper
                   key={assignment.id}
-                  onClick={() => navigate(`/student/assignment/${assignment.id}`)}
+                  onClick={locked ? undefined : () => navigate(`/student/assignment/${assignment.id}`)}
                   className="card"
-                  style={{ width: '100%', textAlign: 'left', cursor: 'pointer', color: 'var(--color-text)' }}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    cursor: locked ? 'not-allowed' : 'pointer',
+                    color: 'var(--color-text)',
+                    opacity: locked ? 0.45 : 1,
+                  }}
                 >
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, flex: 1, minWidth: 0 }}>
@@ -204,9 +224,30 @@ export default function AssignmentList() {
                         </p>
                       </div>
                     </div>
-                    <StatusBadge status={status} />
+                    {locked ? (
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: 'var(--color-surface-alt)',
+                          border: '2px solid var(--color-border)',
+                          boxShadow: '2px 2px 0 #000',
+                          padding: '3px 8px',
+                          fontFamily: '"Press Start 2P", monospace',
+                          fontSize: 6,
+                          color: 'var(--color-text-muted)',
+                          letterSpacing: '0.05em',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        Åpner {formatDate(assignment.startDate)}
+                      </span>
+                    ) : (
+                      <StatusBadge status={status} />
+                    )}
                   </div>
-                </button>
+                </Wrapper>
               )
             })}
           </div>

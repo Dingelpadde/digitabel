@@ -16,7 +16,9 @@ export const ASSIGNMENTS = [
     title: 'Bildeserie',
     description:
       'Lag en bildeserie for en merkevare. Hold deg innenfor merkevarens visuelle identitet — og gjør bevisste valg av konsept, location og utstyr.',
+    startDate: '2026-08-18',
     supervisionDate: '2026-09-09',
+    presentationDate: '2026-09-25',
     prepQuestions: [
       'Hvilken merkevare jobber du med?',
       'Beskriv den visuelle identiteten til merkevaren med dine egne ord.',
@@ -44,7 +46,9 @@ Hjelp med enkle tips om fotoutstyr. Burde de bruke telelinse her? Vidvinkel pass
     title: 'Film og postproduksjon',
     description:
       'Lag en film for en merkevare. For mange er dette første møte med skikkelig film — der lys og lyd virkelig betyr noe. Idéen må henge sammen med merkevaren.',
+    startDate: '2026-09-29',
     supervisionDate: '2026-10-22',
+    presentationDate: '2026-11-06',
     prepQuestions: [
       'Hvilket av oppgavealternativene har du valgt, og hvilken merkevare jobber du med?',
       'Hvorfor lager du denne filmen, hva vil du si med den, og hvor skal den vises?',
@@ -75,7 +79,9 @@ Her kan du pushe litt. Kanskje det hadde vært kult å filme alt i log? Flere ka
     title: 'Historiefortelling og fordypning i klipp',
     description:
       'Gruppebasert oppgave med en ekte artist som kunde. Mye avhenger av artisten dere jobber med — og av at gruppa fungerer. Hovedfokus er produksjonen.',
+    startDate: '2026-11-03',
     supervisionDate: null,
+    presentationDate: '2026-12-04',
     prepQuestions: [
       'Hvilken artist/kunde jobber gruppa med?',
       'Hvordan går det i gruppa — har alle funnet en rolle?',

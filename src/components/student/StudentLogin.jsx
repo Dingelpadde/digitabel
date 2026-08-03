@@ -55,6 +55,11 @@ export default function StudentLogin() {
           consent_given_at: new Date().toISOString(),
           kull: form.kull.trim(),
         })
+        fetch('/api/send-welcome', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: studentData.name, email: studentData.email }),
+        }).catch(() => {})
       } catch {
         studentData = {
           id: `local-${form.email.trim().toLowerCase()}`,

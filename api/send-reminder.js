@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         from,
         ...(replyTo ? { replyTo } : {}),
         to: student.email,
-        subject: `Ta en runde med Digitabel før vi møtes – ${assignmentTitle}`,
+        subject: `Ta en runde med Digitabel før vi møtes, ${assignmentTitle}`,
         html: `
 <div style="font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; max-width: 520px; margin: 0 auto; color: #1f2d3d; line-height: 1.6;">
   <p>Hei ${firstName}!</p>
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
     <a href="${link}" style="background: #e8b87a; color: #1a0e04; text-decoration: none; font-weight: 600; padding: 12px 24px; border-radius: 4px; display: inline-block;">Start med Digitabel</a>
   </p>
   <p>Gleder meg til å se hva du har jobbet med!</p>
-  <p>— Abel</p>
+  <p>Abel</p>
 </div>`,
       })
       results.email.push(student.id)
