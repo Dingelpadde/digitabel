@@ -33,6 +33,17 @@ export async function upsertStudent({ name, email, consent_given_at, kull }) {
   return data
 }
 
+export async function updateStudentKull(studentId, kull) {
+  const { data, error } = await supabase
+    .from('students')
+    .update({ kull })
+    .eq('id', studentId)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
 // ─── Student Assignments ─────────────────────────────────────────────────────
 
 export async function getStudentAssignments(studentId) {

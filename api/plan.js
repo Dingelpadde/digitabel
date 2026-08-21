@@ -20,7 +20,9 @@ Regler:
 - Start med oppstart/planlegging, avslutt med innlevering eller ferdig produkt
 - Ta hensyn til hvilke dager studenten ikke er tilgjengelig
 - Realistisk tidsbruk basert på hva studenten oppgir
-- Norsk bokmål, ingen emojier`
+- Norsk bokmål, ingen emojier
+- Bruk aldri tankestrek (– eller —). Bruk komma, punktum eller linjeskift i stedet.
+- Ikke omtal faglærer ved navn, skriv "veileder" eller "faglærer"`
 
 export default async function handler(req) {
   if (req.method !== 'POST') return new Response('Method not allowed', { status: 405 })
@@ -43,7 +45,10 @@ export default async function handler(req) {
     if (themeContext.supervisionDate) {
       const d = new Date(themeContext.supervisionDate + 'T12:00:00')
       const dateStr = d.toLocaleDateString('no-NO', { day: 'numeric', month: 'long', year: 'numeric' })
-      themeBlock += `\nVeiledningsdato med faglærer Abel: ${dateStr}. Legg inn denne datoen som en fast milepæl med tittelen "Klar til veiledning" og planlegg alle andre milepæler frem mot den.`
+      themeBlock += `\nVeiledningsdato: ${dateStr}. Legg inn denne datoen som en fast milepæl med tittelen "Klar til veiledning" og planlegg alle andre milepæler frem mot den.`
+    }
+    if (themeContext.planningGuidance) {
+      themeBlock += `\n\n${themeContext.planningGuidance}`
     }
   }
 

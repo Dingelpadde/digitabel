@@ -3,7 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import MilestoneTimeline from '../components/student/MilestoneTimeline'
 
 const SLOTS = [
-  { id: 'tema-1-bildeserie',         label: 'Bildeserie',                          order: '01', supervisionDate: '2026-09-09' },
+  {
+    id: 'tema-1-bildeserie',
+    label: 'Bildeserie',
+    order: '01',
+    supervisionDate: '2026-09-09',
+    planningGuidance: `Studenten skal IKKE ha tatt bildene før veiledning, det er en vanlig feil å unngå. Riktig rekkefølge:
+Før veiledning: en enkel idé klar, et moodboard, og en shootlist. Sett også en foreslått fotograferingsdag i uke 38 (15. eller 18. september) som egen milepæl, slik at studenten kan begynne å tenke på modell og location, men ikke bestille eller booke noe ennå.
+På veiledning: location, modell og andre praktiske valg diskuteres og avklares med faglærer, ikke før.
+Etter veiledning: booke location, finne modell, og annet praktisk forarbeid.
+Selve fotograferingen skjer i uke 38 (15. eller 18. september), altså etter veiledning, ikke før.`,
+  },
   { id: 'tema-2-film',               label: 'Film og postproduksjon',               order: '02', supervisionDate: '2026-10-22' },
   { id: 'tema-3-historiefortelling', label: 'Historiefortelling',                   order: '03', supervisionDate: null },
   { id: 'valgfritt',                 label: 'Valgfritt prosjekt',                   order: '04', supervisionDate: null },
@@ -151,7 +161,7 @@ export default function ProjectPlanPage() {
     setStep(editMessage ? 'editing' : 'generating')
     const slot = SLOTS[activeSlot]
     const themeContext = slot.id !== 'valgfritt'
-      ? { title: slot.label, supervisionDate: slot.supervisionDate }
+      ? { title: slot.label, supervisionDate: slot.supervisionDate, planningGuidance: slot.planningGuidance }
       : null
     try {
       const res = await fetch('/api/plan', {

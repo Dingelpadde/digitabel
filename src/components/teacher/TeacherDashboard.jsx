@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase, getStudents } from '../../lib/supabase'
+import { supabase, getStudents, updateStudentKull } from '../../lib/supabase'
 import { ASSIGNMENTS } from '../../data/assignments'
 import StatusBadge from '../shared/StatusBadge'
 
@@ -178,6 +178,37 @@ export default function TeacherDashboard({ onLogout }) {
 
   const getNotStartedStudents = (assignmentId) =>
     students.filter((s) => getStatus(s.id, assignmentId) === 'not_started')
+
+  const kullOptions = [...new Set(students.map((s) => (s.kull || '').trim()).filter(Boolean))].sort()
+
+  const handleKullChange = async (studentId, value) => {
+    let newKull = value
+    if (value === '__new__') {
+      newKull = window.prompt('Navn på nytt kull:')
+      if (!newKull || !newKull.trim()) return
+      newKull = newKull.trim()
+    }
+    const prev = students
+    setStudents((s) => s.map((st) => (st.id === studentId ? { ...st, kull: newKull } : st)))
+    try {
+      await updateStudentKull(studentId, newKull)
+    } catch (err) {
+      console.error('Klarte ikke oppdatere kull:', err)
+      setStudents(prev)
+    }
+  }
+
+  const kullGroups = students.reduce((acc, s) => {
+    const key = (s.kull || '').trim() || 'Ikke satt'
+    if (!acc[key]) acc[key] = []
+    acc[key].push(s)
+    return acc
+  }, {})
+  const kullGroupNames = Object.keys(kullGroups).sort((a, b) => {
+    if (a === 'Ikke satt') return 1
+    if (b === 'Ikke satt') return -1
+    return a.localeCompare(b)
+  })
 
   const sendReminder = async (assignmentId) => {
     const notStarted = getNotStartedStudents(assignmentId)
@@ -373,108 +404,168 @@ export default function TeacherDashboard({ onLogout }) {
 
             {/* ── STUDENTER ────────────────────────────────────────────── */}
             {activeView === 'students' && (
-              <div
-                style={{
-                  background: 'var(--color-surface)',
-                  border: '2px solid var(--color-border)',
-                  boxShadow: '4px 4px 0 rgba(0,0,0,0.4)',
-                  overflow: 'hidden',
-                }}
-              >
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ borderBottom: '2px solid var(--color-border)', background: 'var(--color-bg)' }}>
-                      <th
-                        style={{
-                          textAlign: 'left',
-                          padding: '12px 16px',
-                          fontFamily: '"Press Start 2P"',
-                          fontSize: 6,
-                          color: 'var(--color-text-muted)',
-                          letterSpacing: '0.06em',
-                          fontWeight: 'normal',
-                        }}
-                      >
-                        STUDENT
-                      </th>
-                      {ASSIGNMENTS.map((a) => (
-                        <th
-                          key={a.id}
-                          title={a.title}
-                          style={{
-                            textAlign: 'center',
-                            padding: '12px 8px',
-                            fontFamily: '"Press Start 2P"',
-                            fontSize: 6,
-                            color: 'var(--color-text-muted)',
-                            letterSpacing: '0.06em',
-                            fontWeight: 'normal',
-                          }}
-                        >
-                          {a.orderIndex}
-                        </th>
-                      ))}
-                      <th
-                        style={{
-                          textAlign: 'center',
-                          padding: '12px 16px',
-                          fontFamily: '"Press Start 2P"',
-                          fontSize: 6,
-                          color: 'var(--color-text-muted)',
-                          letterSpacing: '0.06em',
-                          fontWeight: 'normal',
-                        }}
-                      >
-                        CLEARED
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {students.map((student, idx) => {
-                      const clearedCount = ASSIGNMENTS.filter(
-                        (a) => getStatus(student.id, a.id) === 'cleared'
-                      ).length
-                      const isAll = clearedCount === ASSIGNMENTS.length
-                      return (
-                        <tr
-                          key={student.id}
-                          onClick={() => navigate(`/admin/student/${student.id}`)}
-                          style={{
-                            borderBottom: idx < students.length - 1 ? '1px solid var(--color-border)' : 'none',
-                            cursor: 'pointer',
-                            transition: 'background 80ms',
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-alt)' }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-                        >
-                          <td style={{ padding: '12px 16px', color: 'var(--color-text)', fontWeight: 500 }}>
-                            {student.name}
-                          </td>
-                          {ASSIGNMENTS.map((a) => (
-                            <td key={a.id} style={{ textAlign: 'center', padding: '12px 8px' }}>
-                              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                                <StatusBadge status={getStatus(student.id, a.id)} compact />
-                              </div>
-                            </td>
-                          ))}
-                          <td style={{ textAlign: 'center', padding: '12px 16px' }}>
-                            <span
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                {kullGroupNames.map((kullName) => (
+                  <div key={kullName}>
+                    <p
+                      style={{
+                        fontFamily: '"Press Start 2P"',
+                        fontSize: 7,
+                        color: 'var(--color-text-muted)',
+                        letterSpacing: '0.06em',
+                        marginBottom: 10,
+                      }}
+                    >
+                      {kullName.toUpperCase()} ({kullGroups[kullName].length})
+                    </p>
+                    <div
+                      style={{
+                        background: 'var(--color-surface)',
+                        border: '2px solid var(--color-border)',
+                        boxShadow: '4px 4px 0 rgba(0,0,0,0.4)',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                        <thead>
+                          <tr style={{ borderBottom: '2px solid var(--color-border)', background: 'var(--color-bg)' }}>
+                            <th
                               style={{
+                                textAlign: 'left',
+                                padding: '12px 16px',
                                 fontFamily: '"Press Start 2P"',
-                                fontSize: 8,
-                                color: isAll ? '#6ab04c' : 'var(--color-text-muted)',
+                                fontSize: 6,
+                                color: 'var(--color-text-muted)',
+                                letterSpacing: '0.06em',
+                                fontWeight: 'normal',
                               }}
                             >
-                              {clearedCount}/{ASSIGNMENTS.length}
-                            </span>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-                <p style={{ padding: '8px 16px', fontSize: 11, color: 'var(--color-text-muted)', borderTop: '1px solid var(--color-border)' }}>
-                  Tall 1–{ASSIGNMENTS.length} = oppgavenummer · Klikk en rad for detaljer
+                              STUDENT
+                            </th>
+                            {ASSIGNMENTS.map((a) => (
+                              <th
+                                key={a.id}
+                                title={a.title}
+                                style={{
+                                  textAlign: 'center',
+                                  padding: '12px 8px',
+                                  fontFamily: '"Press Start 2P"',
+                                  fontSize: 6,
+                                  color: 'var(--color-text-muted)',
+                                  letterSpacing: '0.06em',
+                                  fontWeight: 'normal',
+                                }}
+                              >
+                                {a.orderIndex}
+                              </th>
+                            ))}
+                            <th
+                              style={{
+                                textAlign: 'center',
+                                padding: '12px 16px',
+                                fontFamily: '"Press Start 2P"',
+                                fontSize: 6,
+                                color: 'var(--color-text-muted)',
+                                letterSpacing: '0.06em',
+                                fontWeight: 'normal',
+                              }}
+                            >
+                              CLEARED
+                            </th>
+                            <th
+                              style={{
+                                textAlign: 'center',
+                                padding: '12px 16px',
+                                fontFamily: '"Press Start 2P"',
+                                fontSize: 6,
+                                color: 'var(--color-text-muted)',
+                                letterSpacing: '0.06em',
+                                fontWeight: 'normal',
+                              }}
+                            >
+                              KULL
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {kullGroups[kullName].map((student, idx) => {
+                            const clearedCount = ASSIGNMENTS.filter(
+                              (a) => getStatus(student.id, a.id) === 'cleared'
+                            ).length
+                            const isAll = clearedCount === ASSIGNMENTS.length
+                            return (
+                              <tr
+                                key={student.id}
+                                style={{
+                                  borderBottom: idx < kullGroups[kullName].length - 1 ? '1px solid var(--color-border)' : 'none',
+                                  transition: 'background 80ms',
+                                }}
+                                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-surface-alt)' }}
+                                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+                              >
+                                <td
+                                  onClick={() => navigate(`/admin/student/${student.id}`)}
+                                  style={{ padding: '12px 16px', color: 'var(--color-text)', fontWeight: 500, cursor: 'pointer' }}
+                                >
+                                  {student.name}
+                                </td>
+                                {ASSIGNMENTS.map((a) => (
+                                  <td
+                                    key={a.id}
+                                    onClick={() => navigate(`/admin/student/${student.id}`)}
+                                    style={{ textAlign: 'center', padding: '12px 8px', cursor: 'pointer' }}
+                                  >
+                                    <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                      <StatusBadge status={getStatus(student.id, a.id)} compact />
+                                    </div>
+                                  </td>
+                                ))}
+                                <td
+                                  onClick={() => navigate(`/admin/student/${student.id}`)}
+                                  style={{ textAlign: 'center', padding: '12px 16px', cursor: 'pointer' }}
+                                >
+                                  <span
+                                    style={{
+                                      fontFamily: '"Press Start 2P"',
+                                      fontSize: 8,
+                                      color: isAll ? '#6ab04c' : 'var(--color-text-muted)',
+                                    }}
+                                  >
+                                    {clearedCount}/{ASSIGNMENTS.length}
+                                  </span>
+                                </td>
+                                <td style={{ textAlign: 'center', padding: '10px 16px' }}>
+                                  <select
+                                    value={kullOptions.includes((student.kull || '').trim()) ? student.kull.trim() : ''}
+                                    onChange={(e) => handleKullChange(student.id, e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      fontFamily: 'var(--font-body)',
+                                      fontSize: 11,
+                                      color: 'var(--color-text)',
+                                      background: 'var(--color-bg)',
+                                      border: '1px solid var(--color-border)',
+                                      padding: '4px 6px',
+                                      cursor: 'pointer',
+                                    }}
+                                  >
+                                    <option value="" disabled>Velg kull...</option>
+                                    {kullOptions.map((k) => (
+                                      <option key={k} value={k}>{k}</option>
+                                    ))}
+                                    <option value="__new__">+ Nytt kull...</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            )
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
+                <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>
+                  Tall 1–{ASSIGNMENTS.length} = oppgavenummer · Klikk en rad for detaljer · Bruk KULL-menyen for å flytte en student til en annen gruppe
                 </p>
               </div>
             )}
